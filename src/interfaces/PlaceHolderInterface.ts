@@ -1,2 +1,2 @@
-export default interface PlaceHolderInterface{
+export default interface PlaceHolderInterface {
 }

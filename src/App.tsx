@@ -5,9 +5,10 @@ import './App.css';
 import ClockInterface from './interfaces/ClockInterface';
 import AppInterface from './interfaces/AppInterface';
 
-class App extends React.Component{
-    currentPage: String;
-    constructor(props:AppInterface){
+class App extends React.Component {
+    currentPage: string;
+
+    constructor(props: AppInterface) {
         super(props);
         this.setState({page: "mainPage"})
         this.currentPage = "mainPage";
@@ -19,7 +20,7 @@ class App extends React.Component{
         this.setState({});
     }
 
-    changePage(pageName:String){
+    changePage(pageName: string) {
         switch (pageName) {
             case "mainPage":
                 this.currentPage = pageName;
@@ -32,12 +33,12 @@ class App extends React.Component{
         }
     }
 
-    render(){
+    render() {
         return (
             <div className="App">
                 <header className="App-header">
-                    <Clock />
-                    <img src={logo} className="App-logo" alt="logo" />
+                    <Clock/>
+                    <img src={logo} className="App-logo" alt="logo"/>
                     <p>
                         Edit <code>src/App.tsx</code> and save to reload.
                     </p>
@@ -58,6 +59,7 @@ class App extends React.Component{
         );
     }
 }
+
 // ================[Pages]=====================
 // ===============[MainPage]===================
 const mainPage =
@@ -79,20 +81,21 @@ const secondPage =
 /**
  * Interface for props used in the Clock class
  */
-interface DisplayClockInterface{
+interface DisplayClockInterface {
     date: Date;
 }
 
-function FormattedDate(props:DisplayClockInterface) {
+function FormattedDate(props: DisplayClockInterface) {
     return <h2>{props.date.toLocaleTimeString()}</h2>;
 }
 
 class Clock extends React.Component<any, any> {
     private timerID: NodeJS.Timeout;
-    constructor(props:ClockInterface) {
+
+    constructor(props: ClockInterface) {
         super(props);
         this.state = {date: new Date()};
-        this.timerID = setInterval(()=> this.tick(), 1000);
+        this.timerID = setInterval(() => this.tick(), 1000);
     }
 
     componentDidMount() {
@@ -116,11 +119,12 @@ class Clock extends React.Component<any, any> {
     render() {
         return (
             <div>
-                <FormattedDate date={this.state.date} />
+                <FormattedDate date={this.state.date}/>
             </div>
         );
     }
 }
+
 // ============================================
 
 

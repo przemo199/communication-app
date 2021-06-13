@@ -1,3 +1,3 @@
-export default interface AppInterface{
-    currentPage: String;
+export default interface AppInterface {
+    currentPage: string;
 }
