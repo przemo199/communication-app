@@ -3,34 +3,82 @@ import logo from './logo.svg';
 import './App.css';
 
 import ClockInterface from './interfaces/ClockInterface';
+import AppInterface from './interfaces/AppInterface';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-          <Clock />
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-      <div>
-        <h1>Welcome to AnonComms</h1>
-          <p>Use this app to communicate with other anons via a peer-to-peer connection</p>
-          <p>This is another sentence</p>
-      </div>
-    </div>
-  );
+class App extends React.Component{
+    currentPage: String;
+    constructor(props:AppInterface){
+        super(props);
+        this.setState({page: "mainPage"})
+        this.currentPage = "mainPage";
+
+        this.changePage = this.changePage.bind(this);
+    }
+
+    componentDidMount() {
+        this.setState({});
+    }
+
+    changePage(pageName:String){
+        switch (pageName) {
+            case "mainPage":
+                this.currentPage = pageName;
+                this.setState({page: "mainPage"})
+                break;
+            case "secondPage":
+                this.currentPage = pageName;
+                this.setState({page: "secondPage"})
+                break;
+        }
+    }
+
+    render(){
+        return (
+            <div className="App">
+                <header className="App-header">
+                    <Clock />
+                    <img src={logo} className="App-logo" alt="logo" />
+                    <p>
+                        Edit <code>src/App.tsx</code> and save to reload.
+                    </p>
+                    <a
+                        className="App-link"
+                        href="https://reactjs.org"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Learn React
+                    </a>
+                </header>
+                {this.currentPage === "mainPage" && mainPage  //in js true && expression evaluates to expression,
+                    }
+                {this.currentPage === "secondPage" && secondPage   //false && expression evaluates to false
+                    }
+                <button onClick={() => this.changePage("mainPage")}>Main Page</button>
+                <button onClick={() => this.changePage("secondPage")}>Second Page</button>
+            </div>
+        );
+    }
 }
+// ================[Pages]=====================
+// ===============[MainPage]===================
+const mainPage =
+    <div>
+        <h1>Welcome to AnonComms</h1>
+        <p>Lorem Ipsum Dolor Sit Amet</p>
+    </div>
 
+// ==============[SecondPage]==================
+const secondPage =
+    <div>
+        <h1>Welcome to AnonComms</h1>
+        <p>This is a second Page</p>
+    </div>
+
+// =================[Clock]====================
+/**
+ * Interface for props used in the Clock class
+ */
 interface DisplayClockInterface{
     date: Date;
 }
@@ -73,5 +121,7 @@ class Clock extends React.Component<any, any> {
         );
     }
 }
+// ============================================
+
 
 export default App;
