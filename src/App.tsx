@@ -50,10 +50,8 @@ class App extends React.Component{
                         Learn React
                     </a>
                 </header>
-                {this.currentPage === "mainPage" && mainPage  //in js true && expression evaluates to expression,
-                    }
-                {this.currentPage === "secondPage" && secondPage   //false && expression evaluates to false
-                    }
+                {this.currentPage === "mainPage" && mainPage  /*in js true && expression evaluates to expression,*/}
+                {this.currentPage === "secondPage" && secondPage   /*false && expression evaluates to false*/}
                 <button onClick={() => this.changePage("mainPage")}>Main Page</button>
                 <button onClick={() => this.changePage("secondPage")}>Second Page</button>
             </div>
@@ -75,6 +73,8 @@ const secondPage =
         <p>This is a second Page</p>
     </div>
 
+// ============================================
+
 // =================[Clock]====================
 /**
  * Interface for props used in the Clock class
@@ -84,7 +84,7 @@ interface DisplayClockInterface{
 }
 
 function FormattedDate(props:DisplayClockInterface) {
-    return <h2>It is {props.date.toLocaleTimeString()}.</h2>;
+    return <h2>{props.date.toLocaleTimeString()}</h2>;
 }
 
 class Clock extends React.Component<any, any> {
