@@ -2,24 +2,19 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-import ClockInterface from './interfaces/ClockInterface';
-import AppInterface from './interfaces/AppInterface';
-
 class App extends React.Component{
-    currentPage: String;
-    constructor(props:AppInterface){
+    currentPage: string;
+    constructor(props:{currentPage:string}){
         super(props);
-        this.setState({page: "mainPage"})
         this.currentPage = "mainPage";
-
         this.changePage = this.changePage.bind(this);
     }
 
     componentDidMount() {
-        this.setState({});
+        this.setState({page: "mainPage"})
     }
 
-    changePage(pageName:String){
+    changePage(pageName:string){
         switch (pageName) {
             case "mainPage":
                 this.currentPage = pageName;
@@ -89,7 +84,7 @@ function FormattedDate(props:DisplayClockInterface) {
 
 class Clock extends React.Component<any, any> {
     private timerID: NodeJS.Timeout;
-    constructor(props:ClockInterface) {
+    constructor(props: {timerID:NodeJS.Timeout}) {
         super(props);
         this.state = {date: new Date()};
         this.timerID = setInterval(()=> this.tick(), 1000);
