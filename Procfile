@@ -1,1 +1,1 @@
-web: cd server-dist && node index.js
+web: node server-dist/index.js
