@@ -24,6 +24,9 @@ class App extends React.Component{
                 this.currentPage = pageName;
                 this.setState({page: "secondPage"})
                 break;
+            default:
+                console.log("[App class] This page does not Exist");
+                break;
         }
     }
 
@@ -45,10 +48,10 @@ class App extends React.Component{
                         Learn React
                     </a>
                 </header>
-                {this.currentPage === "mainPage" && mainPage  /*in js true && expression evaluates to expression,*/}
-                {this.currentPage === "secondPage" && secondPage   /*false && expression evaluates to false*/}
                 <button onClick={() => this.changePage("mainPage")}>Main Page</button>
                 <button onClick={() => this.changePage("secondPage")}>Second Page</button>
+                {this.currentPage === "mainPage" && mainPage  /*in js true && expression evaluates to expression,*/}
+                {this.currentPage === "secondPage" && secondPage   /*false && expression evaluates to false*/}
             </div>
         );
     }
@@ -88,11 +91,9 @@ class Clock extends React.Component<any, any> {
     constructor(props: {timerID:NodeJS.Timeout}) {
         super(props);
         this.state = {date: new Date()};
-        this.timerID = setInterval(() => this.tick(), 1000);
     }
 
     componentDidMount() {
-        clearInterval(this.timerID);
         this.timerID = setInterval(
             () => this.tick(),
             1000
