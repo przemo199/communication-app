@@ -1,7 +1,6 @@
-import PlaceHolderInterface from "../interfaces/PlaceHolderInterface";
 import React from "react";
 
-const MainComponent = (props:PlaceHolderInterface) => {
+const MainComponent = (props: {}) => {
     return (
         <div>
             <h1>Welcome to AnonComms</h1>
