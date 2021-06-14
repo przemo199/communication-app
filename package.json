@@ -31,7 +31,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "heroku-postbuild": "npm build && cd src/server && tsc"
+    "heroku-postbuild": "npm run build && cd src/server && tsc"
   },
   "eslintConfig": {
     "extends": [
