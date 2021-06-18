@@ -2,75 +2,76 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-class App extends React.Component{
-    currentPage: string;
-    constructor(props:{currentPage:string}){
-        super(props);
-        this.currentPage = "mainPage";
-        this.changePage = this.changePage.bind(this);
-    }
+class App extends React.Component {
+  currentPage: string;
 
-    componentDidMount() {
+  constructor(props: { currentPage: string }) {
+    super(props);
+    this.currentPage = "mainPage";
+    this.changePage = this.changePage.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState({page: "mainPage"})
+  }
+
+  changePage(pageName: string) {
+    switch (pageName) {
+      case "mainPage":
+        this.currentPage = pageName;
         this.setState({page: "mainPage"})
+        break;
+      case "secondPage":
+        this.currentPage = pageName;
+        this.setState({page: "secondPage"})
+        break;
+      default:
+        console.log("[App class] This page does not Exist");
+        break;
     }
+  }
 
-    changePage(pageName:string){
-        switch (pageName) {
-            case "mainPage":
-                this.currentPage = pageName;
-                this.setState({page: "mainPage"})
-                break;
-            case "secondPage":
-                this.currentPage = pageName;
-                this.setState({page: "secondPage"})
-                break;
-            default:
-                console.log("[App class] This page does not Exist");
-                break;
-        }
-    }
-
-    render() {
-        return (
-            <div className="App">
-                <header className="App-header">
-                    <Clock/>
-                    <img src={logo} className="App-logo" alt="logo"/>
-                    <p>
-                        Edit <code>src/App.tsx</code> and save to reload.
-                    </p>
-                    <a
-                        className="App-link"
-                        href="https://reactjs.org"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Learn React
-                    </a>
-                </header>
-                <button onClick={() => this.changePage("mainPage")}>Main Page</button>
-                <button onClick={() => this.changePage("secondPage")}>Second Page</button>
-                {this.currentPage === "mainPage" && mainPage  /*in js true && expression evaluates to expression,*/}
-                {this.currentPage === "secondPage" && secondPage   /*false && expression evaluates to false*/}
-            </div>
-        );
-    }
+  render() {
+    return (
+      <div className="App">
+        <header className="App-header">
+          <Clock/>
+          <img src={logo} className="App-logo" alt="logo"/>
+          <p>
+            Edit <code>src/App.tsx</code> and save to reload.
+          </p>
+          <a
+            className="App-link"
+            href="https://reactjs.org"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Learn React
+          </a>
+        </header>
+        <button onClick={() => this.changePage("mainPage")}>Main Page</button>
+        <button onClick={() => this.changePage("secondPage")}>Second Page</button>
+        {this.currentPage === "mainPage" && mainPage  /*in js true && expression evaluates to expression,*/}
+        {this.currentPage === "secondPage" && secondPage   /*false && expression evaluates to false*/}
+      </div>
+    );
+  }
 }
 
 // ================[Pages]=====================
 // ===============[MainPage]===================
 const mainPage =
-    <div>
-        <h1>Welcome to AnonComms</h1>
-        <p>Lorem Ipsum Dolor Sit Amet</p>
-    </div>
+  <div>
+    <h1>Welcome to AnonComms</h1>
+    <p>Lorem Ipsum Dolor Sit Amet</p>
+  </div>
 
 // ==============[SecondPage]==================
 const secondPage =
-    <div>
-        <h1>Welcome to AnonComms</h1>
-        <p>This is a second Page</p>
-    </div>
+  <div>
+    <h1>Welcome to AnonComms</h1>
+    <p>This is a second Page</p>
+  </div>
 
 // ============================================
 
@@ -79,44 +80,45 @@ const secondPage =
  * Interface for props used in the Clock class
  */
 interface DisplayClockInterface {
-    date: Date;
+  date: Date;
 }
 
 function FormattedDate(props: DisplayClockInterface) {
-    return <h2>{props.date.toLocaleTimeString()}</h2>;
+  return <h2>{props.date.toLocaleTimeString()}</h2>;
 }
 
 class Clock extends React.Component<any, any> {
-    private timerID: NodeJS.Timeout;
-    constructor(props: {timerID:NodeJS.Timeout}) {
-        super(props);
-        this.state = {date: new Date()};
-    }
+  private timerID: NodeJS.Timeout;
 
-    componentDidMount() {
-        this.timerID = setInterval(
-            () => this.tick(),
-            1000
-        );
-    }
+  constructor(props: { timerID: NodeJS.Timeout }) {
+    super(props);
+    this.state = {date: new Date()};
+  }
 
-    componentWillUnmount() {
-        clearInterval(this.timerID);
-    }
+  componentDidMount() {
+    this.timerID = setInterval(
+      () => this.tick(),
+      1000
+    );
+  }
 
-    tick() {
-        this.setState({
-            date: new Date()
-        });
-    }
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
 
-    render() {
-        return (
-            <div>
-                <FormattedDate date={this.state.date}/>
-            </div>
-        );
-    }
+  tick() {
+    this.setState({
+      date: new Date()
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        <FormattedDate date={this.state.date}/>
+      </div>
+    );
+  }
 }
 
 // ============================================
