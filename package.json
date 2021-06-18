@@ -2,8 +2,13 @@
   "type": "module",
   "name": "communication-app",
   "version": "0.1.0",
+  "license": "ISC",
   "private": true,
   "main": "./src/server/index.ts",
+  "contributors": [
+    "Przemek Kaminski <przemyslaw.m.kaminski@gmail.com> (https://www.linkedin.com/in/przemekkaminski/)",
+    "Adam Tomaszewski <adam.tomaszewski@hotmail.co.uk> (https://www.linkedin.com/in/adam-tomaszewski-9838a11bb/)"
+  ],
   "dependencies": {
     "@types/react": "^17.0.11",
     "@types/react-dom": "^17.0.7",
@@ -27,7 +32,8 @@
     "typescript": "^4.3.2"
   },
   "scripts": {
-    "start-server": "node ./server-dist/index.js",
+    "start-server": "npm run build-server && node ./server-dist/index.js",
+    "build-server": "cd src/server && tsc",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
