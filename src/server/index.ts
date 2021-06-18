@@ -6,7 +6,7 @@ const app = express()
 const PORT = process.env.PORT || 5000
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-app.use(express.static(path.join(__dirname, '../..', 'build')))
+app.use(express.static(path.join(__dirname, '..', 'build')))
 //app.use(express.static("../public"));
 
 // app.use((req, res, next) => {
