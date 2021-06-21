@@ -20,8 +20,8 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
+  "exclude": ["./src/server/**/*"],
   "include": [
-    "./src/server/**/*",
-    "src/custom.d.ts"
+    "src/**/*"
   ]
 }

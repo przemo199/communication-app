@@ -1,32 +1,37 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import {Button} from 'react-bootstrap';
+import Clock from './components/Clock';
+import MainComponent from './components/MainComponent';
 
 class App extends React.Component {
   currentPage: string;
 
   constructor(props: { currentPage: string }) {
     super(props);
-    this.currentPage = "mainPage";
+    this.currentPage = 'mainPage';
+    this.state =
+      {view: 'buttons'}
     this.changePage = this.changePage.bind(this);
   }
 
   componentDidMount() {
-    this.setState({page: "mainPage"})
+    this.setState({page: 'mainPage'})
   }
 
   changePage(pageName: string) {
     switch (pageName) {
       case "mainPage":
         this.currentPage = pageName;
-        this.setState({page: "mainPage"})
+        this.setState({page: 'mainPage'})
         break;
       case "secondPage":
         this.currentPage = pageName;
-        this.setState({page: "secondPage"})
+        this.setState({page: 'secondPage'})
         break;
       default:
-        console.log("[App class] This page does not Exist");
+        console.log('[App class] This page does not Exist');
         break;
     }
   }
@@ -35,93 +40,21 @@ class App extends React.Component {
     return (
       <div className="App">
         <header className="App-header">
+          {MainComponent()}
           <Clock/>
-          <img src={logo} className="App-logo" alt="logo"/>
-          <p>
-            Edit <code>src/App.tsx</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
+          {buttons}
         </header>
-        <button onClick={() => this.changePage("mainPage")}>Main Page</button>
-        <button onClick={() => this.changePage("secondPage")}>Second Page</button>
-        {this.currentPage === "mainPage" && mainPage  /*in js true && expression evaluates to expression,*/}
-        {this.currentPage === "secondPage" && secondPage   /*false && expression evaluates to false*/}
       </div>
     );
   }
 }
 
-// ================[Pages]=====================
-// ===============[MainPage]===================
-const mainPage =
-  <div>
-    <h1>Welcome to AnonComms</h1>
-    <p>Lorem Ipsum Dolor Sit Amet</p>
-  </div>
-
-// ==============[SecondPage]==================
-const secondPage =
-  <div>
-    <h1>Welcome to AnonComms</h1>
-    <p>This is a second Page</p>
+const buttons =
+  <div className="justify-content-md-center">
+    <Button className="m-5" variant="success" size="lg">Create chat room</Button>
+    <Button className="m-5" variant="primary" size="lg">Join chat room</Button>
   </div>
 
 // ============================================
-
-// =================[Clock]====================
-/**
- * Interface for props used in the Clock class
- */
-interface DisplayClockInterface {
-  date: Date;
-}
-
-function FormattedDate(props: DisplayClockInterface) {
-  return <h2>{props.date.toLocaleTimeString()}</h2>;
-}
-
-class Clock extends React.Component<any, any> {
-  private timerID: NodeJS.Timeout;
-
-  constructor(props: { timerID: NodeJS.Timeout }) {
-    super(props);
-    this.state = {date: new Date()};
-  }
-
-  componentDidMount() {
-    this.timerID = setInterval(
-      () => this.tick(),
-      1000
-    );
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.timerID);
-  }
-
-  tick() {
-    this.setState({
-      date: new Date()
-    });
-  }
-
-  render() {
-    return (
-      <div>
-        <FormattedDate date={this.state.date}/>
-      </div>
-    );
-  }
-}
-
-// ============================================
-
 
 export default App;
