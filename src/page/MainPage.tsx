@@ -44,11 +44,9 @@ const MainPage = ({
     let validRoomNumber = checkRoomNumber(roomNumber);
     if (pageState === "createChatRoom" && validRoomNumber) {
       setCurrentRoom(roomNumber);
-      alert(`Room ${roomNumber} Created (Not Really)`);
       setCurrentPage("chatPage");
     } else if (pageState === "joinChatRoom" && validRoomNumber) {
       setCurrentRoom(roomNumber);
-      alert(`Room ${roomNumber} Joined (Not Really)`);
       setCurrentPage("chatPage");
     }
   };

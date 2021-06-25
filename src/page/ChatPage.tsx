@@ -22,6 +22,7 @@ const ChatPage = ({
       chatRef.current.appendChild(childNode);
     }
   };
+
   return (
     <>
       <div className="App">
@@ -29,6 +30,7 @@ const ChatPage = ({
           <section className="top-bar">
             <button onClick={() => setCurrentPage("mainPage")}>Home</button>
             <Clock />
+            <h2>Room {currentRoom}</h2>
           </section>
           <section className="main">
             <div className="peopleList"></div>
