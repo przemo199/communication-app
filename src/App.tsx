@@ -1,9 +1,9 @@
-import React from 'react';
-import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import {Button, Form} from 'react-bootstrap';
-import Clock from './components/Clock';
-import MainComponent from './components/MainComponent';
+import React from "react";
+import "./App.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { Button, Form } from "react-bootstrap";
+import Clock from "./components/Clock";
+import MainComponent from "./components/MainComponent";
 
 interface AppState {
   view: string;
@@ -14,25 +14,25 @@ class App extends React.Component<any, AppState> {
 
   constructor(props: { currentPage: string }) {
     super(props);
-    this.currentPage = 'mainPage';
+    this.currentPage = "mainPage";
     this.state = {
-      view: 'buttons'
-    }
+      view: "buttons",
+    };
   }
 
   setView = (view: string) => {
-    this.setState({"view": view});
-  }
+    this.setState({ view: view });
+  };
 
   render() {
     return (
       <div className="App">
         <header className="App-header">
           {MainComponent()}
-          <Clock/>
-          {this.state.view === "buttons" && Buttons({setView: this.setView})}
-          {this.state.view === "create" && Create({setView: this.setView})}
-          {this.state.view === "join" && Join({setView: this.setView})}
+          <Clock />
+          {this.state.view === "buttons" && Buttons({ setView: this.setView })}
+          {this.state.view === "create" && Create({ setView: this.setView })}
+          {this.state.view === "join" && Join({ setView: this.setView })}
           {/*{this.state.view === "chat" && chat}*/}
         </header>
       </div>
@@ -43,16 +43,30 @@ class App extends React.Component<any, AppState> {
 function Buttons(props: any) {
   let createButtonClicked = () => {
     props.setView("create");
-  }
+  };
 
   let joinButtonClicked = () => {
     props.setView("join");
-  }
+  };
 
   return (
     <div className="justify-content-md-center">
-      <Button className="m-5" variant="success" size="lg" onClick={createButtonClicked}>Create chat room</Button>
-      <Button className="m-5" variant="primary" size="lg" onClick={joinButtonClicked}>Join chat room</Button>
+      <Button
+        className="m-5"
+        variant="success"
+        size="lg"
+        onClick={createButtonClicked}
+      >
+        Create chat room
+      </Button>
+      <Button
+        className="m-5"
+        variant="success"
+        size="lg"
+        onClick={joinButtonClicked}
+      >
+        Join chat room
+      </Button>
     </div>
   );
 }
@@ -64,12 +78,16 @@ function Create(props: any) {
 
   let returnButtonClicked = () => {
     props.setView("buttons");
-  }
+  };
 
   return (
     <div>
       <Form>
-        <Form.Control className="my-3" type="email" placeholder="Enter your code" />
+        <Form.Control
+          className="my-3"
+          type="email"
+          placeholder="Enter your code"
+        />
         <Button className="m-3" variant="light" onClick={returnButtonClicked}>
           🠔
         </Button>
@@ -91,12 +109,16 @@ function Join(props: any) {
 
   let returnButtonClicked = () => {
     props.setView("buttons");
-  }
+  };
 
   return (
     <div>
       <Form>
-        <Form.Control  className="my-3" type="email" placeholder="Enter your code" />
+        <Form.Control
+          className="my-3"
+          type="email"
+          placeholder="Enter your code"
+        />
         <Button className="m-3" variant="light" onClick={returnButtonClicked}>
           🠔
         </Button>
