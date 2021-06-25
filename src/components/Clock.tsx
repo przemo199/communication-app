@@ -1,5 +1,9 @@
 import React from 'react';
 
+interface ClockState {
+  date: Date;
+}
+
 class Clock extends React.Component<any, any> {
   private timerID: NodeJS.Timeout;
 
@@ -11,16 +15,15 @@ class Clock extends React.Component<any, any> {
     };
   }
 
-  componentWillUnmount() {
-    clearInterval(this.state.timerID);
-  }
-
   componentDidMount() {
-    clearInterval(this.state.timerID);
     this.timerID = setInterval(
       this.tick,
       1000
     );
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
   }
 
   tick = () => {
