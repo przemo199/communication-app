@@ -4,8 +4,10 @@ import MainComponent from "../components/MainComponent";
 
 const MainPage = ({
   setCurrentPage,
+  setCurrentRoom,
 }: {
   setCurrentPage: Dispatch<SetStateAction<string>>;
+  setCurrentRoom: Dispatch<SetStateAction<string | null>>;
 }) => {
   const [pageState, setPageState] = useState("main");
   const [roomNumber, setRoomNumber] = useState("");
@@ -31,12 +33,23 @@ const MainPage = ({
     );
   };
 
+  const checkRoomNumber = (number: string) => {
+    // roomNumber does not need to be passed here as number, constant is available from parent function
+    //TODO: more complicated room number checking, i.e. checking whether room already exists
+    return 1 && number;
+  };
+
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (pageState === "createChatRoom") {
+    let validRoomNumber = checkRoomNumber(roomNumber);
+    if (pageState === "createChatRoom" && validRoomNumber) {
+      setCurrentRoom(roomNumber);
       alert(`Room ${roomNumber} Created (Not Really)`);
-    } else if (pageState === "joinChatRoom") {
+      setCurrentPage("chatPage");
+    } else if (pageState === "joinChatRoom" && validRoomNumber) {
+      setCurrentRoom(roomNumber);
       alert(`Room ${roomNumber} Joined (Not Really)`);
+      setCurrentPage("chatPage");
     }
   };
 
