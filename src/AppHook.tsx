@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import MainPage from "./page/MainPage";
@@ -7,30 +7,16 @@ import ChatPage from "./page/ChatPage";
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState<string>("mainPage");
+  // we should move currentRoom to ChatPage so it exists only when it is needed
   const [currentRoom, setCurrentRoom] = useState<string | null>(null);
 
   switch (currentPage) {
     case "mainPage":
-      return (
-        <>
-          <MainPage
-            setCurrentPage={setCurrentPage}
-            setCurrentRoom={setCurrentRoom}
-          />
-        </>
-      );
+      return <MainPage setCurrentPage={setCurrentPage} setCurrentRoom={setCurrentRoom} />;
     case "chatPage":
-      return (
-        <>
-          <ChatPage setCurrentPage={setCurrentPage} currentRoom={currentRoom} />
-        </>
-      );
+      return <ChatPage setCurrentPage={setCurrentPage} currentRoom={currentRoom} />;
     default:
-      return (
-        <>
-          <ErrorPage setCurrentPage={setCurrentPage} />
-        </>
-      );
+      return <ErrorPage setCurrentPage={setCurrentPage} />;
   }
 };
 

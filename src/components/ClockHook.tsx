@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 
 const Clock = () => {
   const [time, setTime] = useState(new Date());
@@ -12,11 +12,7 @@ const Clock = () => {
     };
   }, []);
 
-  return (
-    <div>
-      <h2>{time.toLocaleTimeString()}</h2>
-    </div>
-  );
+  return <h2>{time.toLocaleTimeString()}</h2>;
 };
 
 export default Clock;

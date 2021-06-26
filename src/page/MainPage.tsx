@@ -1,4 +1,5 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
+import {Button, Form} from "react-bootstrap";
 import Clock from "../components/ClockHook";
 import MainComponent from "../components/MainComponent";
 
@@ -20,15 +21,15 @@ const MainPage = ({
   const mainNavButtons = () => {
     return (
       <div className="nav-buttons">
-        <button onClick={() => setPageState("createChatRoom")}>
+        <Button variant="success" className="m-3" onClick={() => setPageState("createChatRoom")}>
           Create Chat Room
-        </button>
-        <button onClick={() => setPageState("joinChatRoom")}>
+        </Button>
+        <Button variant="primary" className="m-3" onClick={() => setPageState("joinChatRoom")}>
           Join Chat Room
-        </button>
-        <button onClick={() => setCurrentPage("errorPage")}>
+        </Button>
+        <Button variant="danger" className="m-3" onClick={() => setCurrentPage("errorPage")}>
           Non existent Page
-        </button>
+        </Button>
       </div>
     );
   };
@@ -55,26 +56,25 @@ const MainPage = ({
     return (
       <div className="createChatRoomFormContainer">
         <form className="createChatRoomForm" onSubmit={handleFormSubmit}>
-          <input
+          <Form.Control
             type="text"
-            placeholder="Room #"
+            placeholder="Room ID"
             value={roomNumber}
             onChange={(e) => {
               setRoomNumber(e.target.value);
             }}
           />
-          <button type="button" onClick={generateRandomRoomNumber}>
+          <Button className="m-2" type="button" onClick={generateRandomRoomNumber}>
             Random
-          </button>
-          <button type="submit">Submit</button>
+          </Button>
+          <Button className="m-2" variant="success" type="submit">Submit</Button>
         </form>
-        <button onClick={() => setPageState("main")}>Main</button>
+        <Button variant="light" onClick={() => setPageState("main")}>Main</Button>
       </div>
     );
   };
 
   return (
-    <>
       <div className="App">
         <header className="App-header">
           <Clock />
@@ -84,7 +84,6 @@ const MainPage = ({
           {pageState === "joinChatRoom" && createJoinChatRoom()}
         </header>
       </div>
-    </>
   );
 };
 
