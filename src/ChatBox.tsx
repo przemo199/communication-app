@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { message, data } from './data/data'
+import React, {useState} from 'react'
+import {data, message} from './data/data'
 
 const ChatBox = () => {
   const [name, setName] = useState('')
@@ -18,7 +18,7 @@ const ChatBox = () => {
       const toAppend: message = {
         id: +Date.now().toString(),
         userName: name,
-        message,
+        message
       }
       appendMessage(toAppend)
     }
@@ -26,7 +26,7 @@ const ChatBox = () => {
   console.log(data)
   return (
     <>
-      <div className='chatBox'></div>
+      <div className="chatBox"></div>
       {messages.map((message) => {
         return (
           <div id={'' + message.id}>
@@ -35,28 +35,28 @@ const ChatBox = () => {
           </div>
         )
       })}
-      <form className='form' onSubmit={handleSubmit}>
-        <label htmlFor='name'>Name : </label>
+      <form className="form" onSubmit={handleSubmit}>
+        <label htmlFor="name">Name : </label>
         <input
-          type='text'
-          id='name'
-          name='name'
+          type="text"
+          id="name"
+          name="name"
           value={name}
           onChange={(e) => {
             setName(e.target.value)
           }}
         />
-        <label htmlFor='message'>Message : </label>
+        <label htmlFor="message">Message : </label>
         <input
-          type='text'
-          id='message'
-          name='message'
+          type="text"
+          id="message"
+          name="message"
           value={message}
           onChange={(e) => {
             setMessage(e.target.value)
           }}
         />
-        <button className='btn' type='submit'>
+        <button className="btn" type="submit">
           Send
         </button>
       </form>
@@ -64,4 +64,4 @@ const ChatBox = () => {
   )
 }
 
-export default ChatBox
+export default ChatBox;
