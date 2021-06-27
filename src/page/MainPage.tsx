@@ -7,15 +7,11 @@ import Peer from "peerjs";
 const MainPage = ({
   setCurrentPage,
   setCurrentRoom,
-  peer,
-  conn,
-  setConn,
+  setCreate,
 }: {
   setCurrentPage: Dispatch<SetStateAction<string>>;
-  setCurrentRoom: Dispatch<SetStateAction<string | null>>;
-  peer: Peer;
-  conn: Peer.DataConnection | undefined;
-  setConn: Dispatch<SetStateAction<Peer.DataConnection | undefined>>;
+  setCurrentRoom: Dispatch<SetStateAction<string | undefined>>;
+  setCreate: Dispatch<SetStateAction<boolean>>;
 }) => {
   const [pageState, setPageState] = useState("main");
   const [roomNumber, setRoomNumber] = useState("");
@@ -63,25 +59,11 @@ const MainPage = ({
     e.preventDefault();
     let validRoomNumber = checkRoomNumber(roomNumber);
     if (pageState === "createChatRoom" && validRoomNumber) {
-      peer.on("connection", (conn) => {
-        setConn(conn);
-        conn.on("data", (data) => {
-          console.log(data);
-        });
-        conn.on("open", () => {
-          conn.send("[Connection Open]");
-        });
-      });
+      setCreate(true);
       setCurrentRoom(roomNumber);
       setCurrentPage("chatPage");
     } else if (pageState === "joinChatRoom" && validRoomNumber) {
-      setConn(peer.connect(roomNumber));
-      conn?.on("data", (data) => {
-        console.log(data);
-      });
-      conn?.on("open", () => {
-        conn.send("[Connection Open]");
-      });
+      setCreate(false);
       setCurrentRoom(roomNumber);
       setCurrentPage("chatPage");
     }
@@ -121,7 +103,7 @@ const MainPage = ({
     <div className="App">
       <header className="App-header">
         <Clock />
-        <h2>Your ID : {peer.id}</h2>
+        <h2>Your ID : </h2>
         {MainComponent()}
         {pageState === "main" && mainNavButtons()}
         {pageState === "createChatRoom" && createJoinChatRoom()}

@@ -4,26 +4,21 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import MainPage from "./page/MainPage";
 import ErrorPage from "./page/ErrorPage";
 import ChatPage from "./page/ChatPage";
-import PeerPage from "./page/PeerPage";
 import Peer from "peerjs";
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState<string>("peerPage");
-  const [currentRoom, setCurrentRoom] = useState<string | null>(null);
+  const [currentRoom, setCurrentRoom] = useState<string | undefined>();
+  const [create, setCreate] = useState(false);
   const [peer, setPeer] = useState<Peer>(new Peer());
-  const [conn, setConn] = useState<Peer.DataConnection>();
 
   switch (currentPage) {
-    case "peerPage":
-      return <PeerPage setCurrentPage={setCurrentPage} setPeer={setPeer} />;
     case "mainPage":
       return (
         <MainPage
           setCurrentPage={setCurrentPage}
           setCurrentRoom={setCurrentRoom}
-          peer={peer}
-          conn={conn}
-          setConn={setConn}
+          setCreate={setCreate}
         />
       );
     case "chatPage":
@@ -31,8 +26,9 @@ const App = () => {
         <ChatPage
           setCurrentPage={setCurrentPage}
           currentRoom={currentRoom}
+          create={create}
           peer={peer}
-          conn={conn}
+          setPeer={setPeer}
         />
       );
     default:

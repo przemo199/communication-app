@@ -27,9 +27,9 @@ const PeerPage = ({
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (peerInput) {
-      setPeer(new Peer(peerInput));
-      setPeerInput("");
       setPeerSetValue(peerInput);
+      setPeer(new Peer(peerSetValue));
+      setPeerInput("");
     }
   };
 
