@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from "react";
-import {Button} from "react-bootstrap";
+import { Button } from "react-bootstrap";
 
 const ErrorPage = ({
   setCurrentPage,
@@ -7,8 +7,8 @@ const ErrorPage = ({
   setCurrentPage: Dispatch<SetStateAction<string>>;
 }) => {
   let goToMainPage = () => {
-    setCurrentPage("mainPage")
-  }
+    setCurrentPage("mainPage");
+  };
 
   // return (
   //     <div className="App-header">
@@ -20,8 +20,13 @@ const ErrorPage = ({
   return (
     <div className="App-header">
       <h2>OOPSIE WOOPSIE!!</h2>
-      <p>UwU we made a fucky wucky!! A little fucko boingo! The code monkeys at our hedquarters are working VEWY HAWD to fix this!</p>
-      <Button variant="light" onClick={goToMainPage}>Main Page</Button>
+      <p>
+        UwU we made a fucky wucky!! A little fucko boingo! The code monkeys at
+        our hedquarters are working VEWY HAWD to fix this!
+      </p>
+      <Button variant="light" onClick={goToMainPage}>
+        Main Page
+      </Button>
     </div>
   );
 };
