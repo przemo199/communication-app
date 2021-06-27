@@ -1,4 +1,5 @@
-import React, { Dispatch, SetStateAction, useState, useRef } from "react";
+import React, {Dispatch, SetStateAction, useEffect,useRef, useState} from "react";
+import { Button, Form } from "react-bootstrap"; 
 import Clock from "../components/ClockHook";
 import Peer from "peerjs";
 
@@ -41,35 +42,33 @@ const ChatPage = ({
   };
 
   return (
-    <>
-      <div className="App">
-        <header className="App-header">
-          <section className="top-bar">
-            <button onClick={() => setCurrentPage("mainPage")}>Home</button>
-            <Clock />
-            <h2>Room {currentRoom}</h2>
-          </section>
-          <section className="main">
-            <div className="peopleList"></div>
-            <div className="chat-main">
-              <div className="chat" ref={chatRef}></div>
-              <div className="input">
-                <form onSubmit={handleSubmit}>
-                  <input
-                    type="text"
-                    placeholder="Enter Message Here"
-                    value={inputMessage}
-                    onChange={(e) => {
-                      setInputMessage(e.target.value);
-                    }}
-                  />
-                </form>
-              </div>
+    <div className="App">
+      <header className="App-header">
+        <section className="top-bar">
+          <Button onClick={() => setCurrentPage("mainPage")}>Home</Button>
+          <Clock/>
+          <h2>Room ID: {currentRoom}</h2>
+        </section>
+        <section className="main">
+          <div className="peopleList"></div>
+          <div className="chat-main">
+            <div className="chat" ref={chatRef}></div>
+            <div className="input">
+              <form onSubmit={handleSubmit}>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter Message Here"
+                  value={inputMessage}
+                  onChange={(e) => {
+                    setInputMessage(e.target.value);
+                  }}
+                /><Button variant="primary" type="submit">➤</Button>
+              </form>
             </div>
-          </section>
-        </header>
-      </div>
-    </>
+          </div>
+        </section>
+      </header>
+    </div>
   );
 };
 

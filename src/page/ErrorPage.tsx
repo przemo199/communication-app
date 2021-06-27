@@ -17,6 +17,7 @@ const ErrorPage = ({
   //       <Button variant="success" onClick={goToMainPage}>Main Page</Button>
   //     </div>
   // );
+
   return (
     <div className="App-header">
       <h2>OOPSIE WOOPSIE!!</h2>
