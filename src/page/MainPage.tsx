@@ -1,14 +1,14 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, {Dispatch, SetStateAction, useState} from "react";
 import {Button, Form} from "react-bootstrap";
 import Clock from "../components/ClockHook";
 import MainComponent from "../components/MainComponent";
 
 const MainPage = ({
-  setCurrentPage,
-  setCurrentRoom,
-}: {
+                    setCurrentPage,
+                    setCurrentRoom
+                  }: {
   setCurrentPage: Dispatch<SetStateAction<string>>;
-  setCurrentRoom: Dispatch<SetStateAction<string | null>>;
+  setCurrentRoom: Dispatch<SetStateAction<string>>;
 }) => {
   const [pageState, setPageState] = useState("main");
   const [roomNumber, setRoomNumber] = useState("");
@@ -75,15 +75,15 @@ const MainPage = ({
   };
 
   return (
-      <div className="App">
-        <header className="App-header">
-          <Clock />
-          {MainComponent()}
-          {pageState === "main" && mainNavButtons()}
-          {pageState === "createChatRoom" && createJoinChatRoom()}
-          {pageState === "joinChatRoom" && createJoinChatRoom()}
-        </header>
-      </div>
+    <div className="App">
+      <header className="App-header">
+        <Clock />
+        {MainComponent()}
+        {pageState === "main" && mainNavButtons()}
+        {pageState === "createChatRoom" && createJoinChatRoom()}
+        {pageState === "joinChatRoom" && createJoinChatRoom()}
+      </header>
+    </div>
   );
 };
 

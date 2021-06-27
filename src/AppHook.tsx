@@ -8,7 +8,7 @@ import ChatPage from "./page/ChatPage";
 const App = () => {
   const [currentPage, setCurrentPage] = useState<string>("mainPage");
   // we should move currentRoom to ChatPage so it exists only when it is needed
-  const [currentRoom, setCurrentRoom] = useState<string | null>(null);
+  const [currentRoom, setCurrentRoom] = useState<string>("");
 
   switch (currentPage) {
     case "mainPage":

@@ -1,5 +1,6 @@
-import React, {useState} from 'react'
-import {data, message} from './data/data'
+import React, {useState} from "react"
+import {data, message} from "./data/data";
+import {Button, Form} from "react-bootstrap";
 
 const ChatBox = () => {
   const [name, setName] = useState('')
@@ -36,8 +37,8 @@ const ChatBox = () => {
         )
       })}
       <form className="form" onSubmit={handleSubmit}>
-        <label htmlFor="name">Name : </label>
-        <input
+        <label htmlFor="name">Name: </label>
+        <Form.Control
           type="text"
           id="name"
           name="name"
@@ -46,7 +47,7 @@ const ChatBox = () => {
             setName(e.target.value)
           }}
         />
-        <label htmlFor="message">Message : </label>
+        <label htmlFor="message">Message: </label>
         <input
           type="text"
           id="message"
@@ -56,9 +57,9 @@ const ChatBox = () => {
             setMessage(e.target.value)
           }}
         />
-        <button className="btn" type="submit">
+        <Button className="btn" type="submit">
           Send
-        </button>
+        </Button>
       </form>
     </>
   )
