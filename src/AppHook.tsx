@@ -7,7 +7,7 @@ import ChatPage from "./page/ChatPage";
 import Peer from "peerjs";
 
 const App = () => {
-  const [currentPage, setCurrentPage] = useState<string>("peerPage");
+  const [currentPage, setCurrentPage] = useState<string>("mainPage");
   const [currentRoom, setCurrentRoom] = useState<string | undefined>();
   const [create, setCreate] = useState(false);
   const [peer, setPeer] = useState<Peer>(new Peer());
