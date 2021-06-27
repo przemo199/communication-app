@@ -1,5 +1,11 @@
-import React, {Dispatch, SetStateAction, useEffect,useRef, useState} from "react";
-import { Button, Form } from "react-bootstrap"; 
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { Button, Form } from "react-bootstrap";
 import Clock from "../components/ClockHook";
 import Peer from "peerjs";
 
@@ -17,16 +23,18 @@ const ChatPage = ({
   const [inputMessage, setInputMessage] = useState<string>("");
   const chatRef = useRef<HTMLDivElement>(null);
 
-  conn?.on("data", (data) => {
-    if (null !== chatRef.current) {
-      let childNode = document.createElement("p");
-      let date = new Date();
-      childNode.textContent =
-        "(Someone Else) (" + date.toLocaleTimeString() + ") " + data;
-      setInputMessage("");
-      chatRef.current.appendChild(childNode);
-    }
-  });
+  useEffect(() => {
+    conn?.on("data", (data) => {
+      if (null !== chatRef.current) {
+        let childNode = document.createElement("p");
+        let date = new Date();
+        childNode.textContent =
+          "(Someone Else) (" + date.toLocaleTimeString() + ") " + data;
+        setInputMessage("");
+        chatRef.current.appendChild(childNode);
+      }
+    });
+  }, [conn]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -46,7 +54,7 @@ const ChatPage = ({
       <header className="App-header">
         <section className="top-bar">
           <Button onClick={() => setCurrentPage("mainPage")}>Home</Button>
-          <Clock/>
+          <Clock />
           <h2>Room ID: {currentRoom}</h2>
         </section>
         <section className="main">
@@ -62,7 +70,10 @@ const ChatPage = ({
                   onChange={(e) => {
                     setInputMessage(e.target.value);
                   }}
-                /><Button variant="primary" type="submit">➤</Button>
+                />
+                <Button variant="primary" type="submit">
+                  ➤
+                </Button>
               </form>
             </div>
           </div>
