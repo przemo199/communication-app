@@ -10,7 +10,7 @@ const Clock = () => {
     return () => {
       clearInterval(timer);
     };
-  });
+  }, []);
 
   return <h2>{time.toLocaleTimeString()}</h2>;
 };
