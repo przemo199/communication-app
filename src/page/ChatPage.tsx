@@ -8,6 +8,7 @@ import React, {
 import { Button, Form } from "react-bootstrap";
 import Clock from "../components/ClockHook";
 import Peer from "peerjs";
+import "./ChatPage.css";
 
 const ChatPage = ({
   setCurrentPage,
@@ -87,7 +88,7 @@ const ChatPage = ({
     let message = JSON.parse(data);
     switch (message.type) {
       case "message":
-        appendDataMessage(message);
+        appendMessage(message);
         break;
       case "connection":
         console.log(`[Connection] ${message.content}`);
@@ -101,42 +102,51 @@ const ChatPage = ({
     }
   };
 
-  const appendDataMessage = (data: any) => {
-    if (null !== chatRef.current) {
-      let childNode = document.createElement("p");
+  const appendMessage = (data: any) => {
+    if (chatRef.current !== null) {
+      let textNode = document.createElement("p");
       let date = new Date();
-      childNode.textContent =
-        "(" +
-        data.sender +
-        ") (" +
-        date.toLocaleTimeString() +
-        ") " +
-        data.content;
-      setInputMessage("");
-      chatRef.current.appendChild(childNode);
+      textNode.textContent =
+        "(" + date.toLocaleTimeString() + ") " + data.content;
+      console.log(chatRef.current.children.length);
+      console.log(chatRef.current.children);
+      let lastMessage =
+        chatRef.current.children[chatRef.current.children.length - 1];
+      let lastTitle;
+      if (lastMessage) {
+        lastTitle = lastMessage.children[0];
+      }
+      console.log(lastTitle);
+      if (lastTitle && lastTitle.getAttribute("sender") === data.sender) {
+        chatRef.current.children[
+          chatRef.current.children.length - 1
+        ].appendChild(textNode);
+      } else {
+        let divNode = document.createElement("section");
+        let title = document.createElement("p");
+        title.setAttribute("sender", data.sender);
+        title.textContent = data.sender;
+        divNode.appendChild(title);
+        divNode.appendChild(textNode);
+        chatRef.current.appendChild(divNode);
+      }
     }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (null !== chatRef.current) {
-      let childNode = document.createElement("p");
-      let date = new Date();
-      childNode.textContent =
-        "(You) (" + date.toLocaleTimeString() + ") " + inputMessage;
-      setInputMessage("");
-      chatRef.current.appendChild(childNode);
-      connList.map((connection) => {
-        console.log(connection);
-        connection.send(
-          JSON.stringify({
-            sender: peer.id,
-            type: "message",
-            content: inputMessage,
-          })
-        );
-      });
-    }
+    appendMessage({ sender: "You", content: inputMessage });
+    connList.map((connection) => {
+      console.log(connection);
+      connection.send(
+        JSON.stringify({
+          sender: peer.id,
+          type: "message",
+          content: inputMessage,
+        })
+      );
+    });
+    setInputMessage("");
   };
 
   return (

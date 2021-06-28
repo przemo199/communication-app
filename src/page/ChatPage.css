@@ -1,0 +1,21 @@
+.main {
+  width: 100%;
+}
+
+.chat {
+  width: 100%;
+}
+
+.input form {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-evenly;
+}
+
+.input .form-control {
+  width: fit-content;
+  flex-grow: 1;
+}
+.input .btn {
+  text-align: center;
+}
