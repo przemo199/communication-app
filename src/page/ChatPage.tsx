@@ -35,6 +35,7 @@ const ChatPage = ({
 
   useEffect(() => {
     if (currentRoom) {
+      // this now runs for all users in chat.
       peer.on("connection", (conn) => {
         conn.on("data", (data) => {
           handleData(data);
@@ -58,25 +59,29 @@ const ChatPage = ({
         });
       });
       if (!create) {
-        let conn = peer.connect(currentRoom);
-        addConn(conn);
-        if (conn !== undefined) {
-          conn.on("data", (data) => {
-            handleData(data);
-          });
-          conn.on("open", () => {
-            conn.send(
-              JSON.stringify({
-                sender: peer.id,
-                type: "connection",
-                content: "Connection Open",
-              })
-            );
-          });
-        }
+        connectToPeer(currentRoom);
       }
     }
   }, []);
+
+  const connectToPeer = (peerID: string) => {
+    let conn = peer.connect(peerID);
+    addConn(conn);
+    if (conn !== undefined) {
+      conn.on("data", (data) => {
+        handleData(data);
+      });
+      conn.on("open", () => {
+        conn.send(
+          JSON.stringify({
+            sender: peer.id,
+            type: "connection",
+            content: "Connection Open",
+          })
+        );
+      });
+    }
+  };
 
   const handleData = (data: any) => {
     let message = JSON.parse(data);
@@ -88,24 +93,9 @@ const ChatPage = ({
         console.log(`[Connection] ${message.content}`);
         break;
       case "peerIDList":
-        message.content.map((peerID: any) => {
-          if (peerID != peer.id && peerIDList.indexOf(peerID) === -1) {
-            let conn = peer.connect(peerID);
-            addConn(conn);
-            if (conn !== undefined) {
-              conn.on("data", (data) => {
-                handleData(data);
-              });
-              conn.on("open", () => {
-                conn.send(
-                  JSON.stringify({
-                    sender: peer.id,
-                    type: "connection",
-                    content: "Connection Open",
-                  })
-                );
-              });
-            }
+        message.content.map((peerID: string) => {
+          if (peerID !== peer.id && peerIDList.indexOf(peerID) === -1) {
+            connectToPeer(peerID);
           }
         });
     }
