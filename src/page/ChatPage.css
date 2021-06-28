@@ -1,9 +1,30 @@
+.top-bar {
+  display: flex;
+  width: 100%;
+  padding: 1em;
+  justify-content: space-between;
+}
+
+.App-header .title {
+  width: 100%;
+  padding-bottom: 1em;
+  text-align: center;
+}
+
 .main {
   width: 100%;
 }
 
 .chat {
   width: 100%;
+}
+
+.chat section p {
+  text-align: right;
+}
+
+.chat section .title {
+  text-align: left;
 }
 
 .input form {

@@ -107,16 +107,13 @@ const ChatPage = ({
       let textNode = document.createElement("p");
       let date = new Date();
       textNode.textContent =
-        "(" + date.toLocaleTimeString() + ") " + data.content;
-      console.log(chatRef.current.children.length);
-      console.log(chatRef.current.children);
+        data.content + " (" + date.toLocaleTimeString() + ") ";
       let lastMessage =
         chatRef.current.children[chatRef.current.children.length - 1];
       let lastTitle;
       if (lastMessage) {
         lastTitle = lastMessage.children[0];
       }
-      console.log(lastTitle);
       if (lastTitle && lastTitle.getAttribute("sender") === data.sender) {
         chatRef.current.children[
           chatRef.current.children.length - 1
@@ -125,6 +122,7 @@ const ChatPage = ({
         let divNode = document.createElement("section");
         let title = document.createElement("p");
         title.setAttribute("sender", data.sender);
+        title.classList.add("title");
         title.textContent = data.sender;
         divNode.appendChild(title);
         divNode.appendChild(textNode);
@@ -137,7 +135,6 @@ const ChatPage = ({
     e.preventDefault();
     appendMessage({ sender: "You", content: inputMessage });
     connList.map((connection) => {
-      console.log(connection);
       connection.send(
         JSON.stringify({
           sender: peer.id,
@@ -155,8 +152,8 @@ const ChatPage = ({
         <section className="top-bar">
           <Button onClick={() => setCurrentPage("mainPage")}>Home</Button>
           <Clock />
-          <h2>Room ID: {peer.id}</h2>
         </section>
+        <h2 className="YourID">Your ID: {peer.id}</h2>
         <section className="main">
           <div className="peopleList"></div>
           <div className="chat-main">
