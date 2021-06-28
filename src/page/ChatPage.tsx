@@ -24,10 +24,12 @@ const ChatPage = ({
 }) => {
   const [inputMessage, setInputMessage] = useState<string>("");
   const chatRef = useRef<HTMLDivElement>(null);
-  const [conn, setConn] = useState<Peer.DataConnection[]>([]);
+  const [connList, setConnList] = useState<Peer.DataConnection[]>([]);
+  const [peerIDList, setPeerIDList] = useState<string[]>([]);
 
   const addConn = (newConnection: Peer.DataConnection) => {
-    conn.push(newConnection);
+    connList.push(newConnection);
+    peerIDList.push(newConnection.peer);
   };
 
   useEffect(() => {
@@ -37,7 +39,7 @@ const ChatPage = ({
         peer.on("connection", (conn) => {
           conn.on("data", (data) => {
             console.log(data);
-            appendDataMessage(data);
+            handleData(data);
           });
           conn.on("open", () => {
             conn.send("[Connection Open]");
@@ -53,7 +55,7 @@ const ChatPage = ({
           console.log("Defining");
           conn.on("data", (data) => {
             console.log(data);
-            appendDataMessage(data);
+            handleData(data);
           });
           conn.on("open", () => {
             conn.send("[Connection Open]");
@@ -63,12 +65,26 @@ const ChatPage = ({
     }
   }, []);
 
+  const handleData = (data: any) => {
+    let message = JSON.parse(data);
+    switch (message.type) {
+      case "message":
+        appendDataMessage(message);
+        break;
+    }
+  };
+
   const appendDataMessage = (data: any) => {
     if (null !== chatRef.current) {
       let childNode = document.createElement("p");
       let date = new Date();
       childNode.textContent =
-        "(Someone Else) (" + date.toLocaleTimeString() + ") " + data;
+        "(" +
+        data.sender +
+        ") (" +
+        date.toLocaleTimeString() +
+        ") " +
+        data.content;
       setInputMessage("");
       chatRef.current.appendChild(childNode);
     }
@@ -83,9 +99,15 @@ const ChatPage = ({
         "(You) (" + date.toLocaleTimeString() + ") " + inputMessage;
       setInputMessage("");
       chatRef.current.appendChild(childNode);
-      conn.map((connection) => {
+      connList.map((connection) => {
         console.log(connection);
-        connection.send(inputMessage);
+        connection.send(
+          JSON.stringify({
+            sender: peer.id,
+            type: "message",
+            content: inputMessage,
+          })
+        );
       });
     }
   };
