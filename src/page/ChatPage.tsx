@@ -1,11 +1,5 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { Button, Form } from "react-bootstrap";
+import React, {Dispatch, SetStateAction, useEffect, useRef, useState} from "react";
+import {Button, Form} from "react-bootstrap";
 import Clock from "../components/ClockHook";
 import Peer from "peerjs";
 import crc32 from "crc-32";
@@ -14,20 +8,53 @@ import "./ChatPage.css";
 const ChatPage = ({
   setCurrentPage,
   currentRoom,
-  create,
-  peer,
-  setPeer,
+  create
 }: {
   setCurrentPage: Dispatch<SetStateAction<string>>;
-  currentRoom: string | undefined;
+  currentRoom: string;
   create: boolean;
-  peer: Peer;
-  setPeer: Dispatch<SetStateAction<Peer>>;
 }) => {
   const [inputMessage, setInputMessage] = useState<string>("");
   const chatRef = useRef<HTMLDivElement>(null);
   const [connList, setConnList] = useState<Peer.DataConnection[]>([]);
   const [peerIDList, setPeerIDList] = useState<string[]>([]);
+  const [peer, setPeer] = useState<Peer>(new Peer());
+
+  useEffect(() => {
+    if (create) {
+      peer.destroy();
+      setPeer(new Peer(currentRoom));
+    } else {
+      peer.destroy();
+      setPeer(new Peer());
+    }
+    // this now runs for all users in chat.
+    peer.on("connection", (conn) => {
+      conn.on("data", (data) => {
+        handleData(data);
+      });
+      conn.on("open", () => {
+        conn.send(
+          JSON.stringify({
+            sender: peer.id,
+            type: "connection",
+            content: "Connection Open"
+          })
+        );
+        addConn(conn);
+        conn.send(
+          JSON.stringify({
+            sender: peer.id,
+            type: "peerIDList",
+            content: peerIDList
+          })
+        );
+      });
+    });
+    if (!create) {
+      connectToPeer(currentRoom);
+    }
+  }, []);
 
   const addConn = (newConnection: Peer.DataConnection) => {
     connList.push(newConnection);
@@ -35,37 +62,6 @@ const ChatPage = ({
     setPeerIDList([...peerIDList]);
     console.log(peerIDList);
   };
-
-  useEffect(() => {
-    if (currentRoom) {
-      // this now runs for all users in chat.
-      peer.on("connection", (conn) => {
-        conn.on("data", (data) => {
-          handleData(data);
-        });
-        conn.on("open", () => {
-          conn.send(
-            JSON.stringify({
-              sender: peer.id,
-              type: "connection",
-              content: "Connection Open",
-            })
-          );
-          addConn(conn);
-          conn.send(
-            JSON.stringify({
-              sender: peer.id,
-              type: "peerIDList",
-              content: peerIDList,
-            })
-          );
-        });
-      });
-      if (!create) {
-        connectToPeer(currentRoom);
-      }
-    }
-  }, []);
 
   const connectToPeer = (peerID: string) => {
     let conn = peer.connect(peerID);
@@ -79,7 +75,7 @@ const ChatPage = ({
           JSON.stringify({
             sender: peer.id,
             type: "connection",
-            content: "Connection Open",
+            content: "Connection Open"
           })
         );
       });
@@ -100,6 +96,7 @@ const ChatPage = ({
           if (peerID !== peer.id && peerIDList.indexOf(peerID) === -1) {
             connectToPeer(peerID);
           }
+          return null;
         });
     }
   };
@@ -120,8 +117,8 @@ const ChatPage = ({
       }
       if (lastTitle && lastTitle.getAttribute("sender") === data.sender) {
         chatRef.current.children[
-          chatRef.current.children.length - 1
-        ].appendChild(textNode);
+        chatRef.current.children.length - 1
+          ].appendChild(textNode);
       } else {
         let divNode = document.createElement("section");
         divNode.classList.add(data.sender === "You" ? "you" : "foreign");
@@ -130,7 +127,7 @@ const ChatPage = ({
         title.classList.add("title");
         title.textContent = data.sender;
         let colourNum = `${crc32.str(data.sender).toString(16)}`;
-        colourNum.padEnd(7, "0");
+        colourNum = colourNum.padEnd(7, "0");
         let colour = `#${colourNum.slice(1, 7)}`;
         title.style.backgroundColor = colour;
         divNode.appendChild(title);
@@ -142,21 +139,22 @@ const ChatPage = ({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    appendMessage({ sender: "You", content: inputMessage });
+    appendMessage({sender: "You", content: inputMessage});
     connList.map((connection) => {
       connection.send(
         JSON.stringify({
           sender: peer.id,
           type: "message",
-          content: inputMessage,
+          content: inputMessage
         })
       );
+      return null;
     });
     setInputMessage("");
   };
 
   const goHome = () => {
-    setPeer(new Peer());
+    peer.destroy();
     setConnList([]);
     setPeerIDList([]);
     setCurrentPage("mainPage");
@@ -167,7 +165,7 @@ const ChatPage = ({
       <header className="App-header">
         <section className="top-bar">
           <Button onClick={() => goHome()}>Home</Button>
-          <Clock />
+          <Clock/>
         </section>
         <h2 className="YourID">Your ID: {peer.id}</h2>
         <section className="main">
@@ -193,7 +191,7 @@ const ChatPage = ({
           <div className="user-list">
             {peerIDList.map((peerID) => {
               let colourNum = `${crc32.str(peerID).toString(16)}`;
-              colourNum.padEnd(7, "0");
+              colourNum = colourNum.padEnd(7, "0");
               let colour = `#${colourNum.slice(1, 7)}`;
               console.log(colour);
               console.log("=====");
@@ -202,7 +200,7 @@ const ChatPage = ({
                 <p
                   className="user"
                   style={{
-                    backgroundColor: colour,
+                    backgroundColor: colour
                   }}
                   key={peerID}
                 >

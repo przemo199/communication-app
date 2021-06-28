@@ -9,7 +9,7 @@ const PeerPage = ({
   setCurrentPage: Dispatch<SetStateAction<string>>;
   setPeer: Dispatch<SetStateAction<Peer>>;
 }) => {
-  let goToMainPage = () => {
+  const goToMainPage = () => {
     if (peerSetValue) {
       setCurrentPage("mainPage");
     }
@@ -28,18 +28,12 @@ const PeerPage = ({
     e.preventDefault();
     if (peerInput) {
       setPeerSetValue(peerInput);
+      console.log(peerSetValue);
       setPeer(new Peer(peerSetValue));
       setPeerInput("");
     }
   };
 
-  // return (
-  //     <div className="App-header">
-  //       <h2>Oops, Something Went Wrong</h2>
-  //       <p>The requested page does not exist.</p>
-  //       <Button variant="success" onClick={goToMainPage}>Main Page</Button>
-  //     </div>
-  // );
   return (
     <div className="App-header">
       <h2>Enter your unique ID, or click random to generate a random ID</h2>

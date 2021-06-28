@@ -9,7 +9,7 @@ const MainPage = ({
   setCreate,
 }: {
   setCurrentPage: Dispatch<SetStateAction<string>>;
-  setCurrentRoom: Dispatch<SetStateAction<string | undefined>>;
+  setCurrentRoom: Dispatch<SetStateAction<string>>;
   setCreate: Dispatch<SetStateAction<boolean>>;
 }) => {
   const [pageState, setPageState] = useState("main");
@@ -36,13 +36,6 @@ const MainPage = ({
           onClick={() => setPageState("joinChatRoom")}
         >
           Join Chat Room
-        </Button>
-        <Button
-          variant="danger"
-          className="m-3"
-          onClick={() => setCurrentPage("errorPage")}
-        >
-          Non existent Page
         </Button>
       </div>
     );
