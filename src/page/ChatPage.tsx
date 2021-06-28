@@ -24,7 +24,11 @@ const ChatPage = ({
 }) => {
   const [inputMessage, setInputMessage] = useState<string>("");
   const chatRef = useRef<HTMLDivElement>(null);
-  const [conn, setConn] = useState<Peer.DataConnection | undefined>();
+  const [conn, setConn] = useState<Peer.DataConnection[]>([]);
+
+  const addConn = (newConnection: Peer.DataConnection) => {
+    conn.push(newConnection);
+  };
 
   useEffect(() => {
     if (currentRoom) {
@@ -36,13 +40,13 @@ const ChatPage = ({
             appendDataMessage(data);
           });
           conn.on("open", () => {
-            conn?.send("[Connection Open]");
+            conn.send("[Connection Open]");
+            addConn(conn);
           });
-          setConn(conn);
         });
       } else {
         let conn = peer.connect(currentRoom);
-        setConn(conn);
+        addConn(conn);
         console.log(conn);
         console.log("Connecting");
         if (conn !== undefined) {
@@ -79,7 +83,10 @@ const ChatPage = ({
         "(You) (" + date.toLocaleTimeString() + ") " + inputMessage;
       setInputMessage("");
       chatRef.current.appendChild(childNode);
-      conn?.send(inputMessage);
+      conn.map((connection) => {
+        console.log(connection);
+        connection.send(inputMessage);
+      });
     }
   };
 

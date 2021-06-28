@@ -2,7 +2,6 @@ import React, { Dispatch, SetStateAction, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import Clock from "../components/ClockHook";
 import MainComponent from "../components/MainComponent";
-import Peer from "peerjs";
 
 const MainPage = ({
   setCurrentPage,
