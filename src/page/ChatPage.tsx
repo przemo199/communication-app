@@ -108,7 +108,9 @@ const ChatPage = ({
       let textNode = document.createElement("p");
       let date = new Date();
       textNode.textContent =
-        data.content + " (" + date.toLocaleTimeString() + ") ";
+        data.sender === "You"
+          ? data.content + " (" + date.toLocaleTimeString() + ") "
+          : " (" + date.toLocaleTimeString() + ") " + data.content;
       let lastMessage =
         chatRef.current.children[chatRef.current.children.length - 1];
       let lastTitle;
