@@ -8,6 +8,7 @@ import React, {
 import { Button, Form } from "react-bootstrap";
 import Clock from "../components/ClockHook";
 import Peer from "peerjs";
+import crc32 from "crc-32";
 import "./ChatPage.css";
 
 const ChatPage = ({
@@ -120,10 +121,15 @@ const ChatPage = ({
         ].appendChild(textNode);
       } else {
         let divNode = document.createElement("section");
+        divNode.classList.add(data.sender === "You" ? "you" : "foreign");
         let title = document.createElement("p");
         title.setAttribute("sender", data.sender);
         title.classList.add("title");
         title.textContent = data.sender;
+        title.style.backgroundColor = `#${crc32
+          .str(data.sender)
+          .toString(16)
+          .slice(3)}`;
         divNode.appendChild(title);
         divNode.appendChild(textNode);
         chatRef.current.appendChild(divNode);

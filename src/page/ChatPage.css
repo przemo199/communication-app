@@ -1,8 +1,20 @@
+.App {
+  display: flex;
+  flex-direction: column;
+}
+
+.App-header {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .top-bar {
   display: flex;
   width: 100%;
   padding: 1em;
   justify-content: space-between;
+  max-width: 1300px;
 }
 
 .App-header .title {
@@ -13,6 +25,11 @@
 
 .main {
   width: 100%;
+  flex-grow: 1;
+  flex-direction: column;
+  justify-content: end;
+  max-width: 1300px;
+  padding: 1em;
 }
 
 .chat {
@@ -24,7 +41,19 @@
 }
 
 .chat section .title {
+  text-align: right;
+  padding: 0.25em;
+  border-radius: 15px;
+  background-color: darkolivegreen;
+}
+
+.chat .foreign p {
   text-align: left;
+}
+
+.chat .foreign .title {
+  text-align: left;
+  background-color: darkslateblue;
 }
 
 .input form {
