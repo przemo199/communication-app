@@ -32,6 +32,7 @@ const ChatPage = ({
   const addConn = (newConnection: Peer.DataConnection) => {
     connList.push(newConnection);
     peerIDList.push(newConnection.peer);
+    setPeerIDList([...peerIDList]);
     console.log(peerIDList);
   };
 
@@ -128,10 +129,10 @@ const ChatPage = ({
         title.setAttribute("sender", data.sender);
         title.classList.add("title");
         title.textContent = data.sender;
-        title.style.backgroundColor = `#${crc32
-          .str(data.sender)
-          .toString(16)
-          .slice(3)}`;
+        let colourNum = `${crc32.str(data.sender).toString(16)}`;
+        colourNum.padEnd(7, "0");
+        let colour = `#${colourNum.slice(1, 7)}`;
+        title.style.backgroundColor = colour;
         divNode.appendChild(title);
         divNode.appendChild(textNode);
         chatRef.current.appendChild(divNode);
@@ -154,11 +155,18 @@ const ChatPage = ({
     setInputMessage("");
   };
 
+  const goHome = () => {
+    setPeer(new Peer());
+    setConnList([]);
+    setPeerIDList([]);
+    setCurrentPage("mainPage");
+  };
+
   return (
     <div className="App">
       <header className="App-header">
         <section className="top-bar">
-          <Button onClick={() => setCurrentPage("mainPage")}>Home</Button>
+          <Button onClick={() => goHome()}>Home</Button>
           <Clock />
         </section>
         <h2 className="YourID">Your ID: {peer.id}</h2>
@@ -181,6 +189,27 @@ const ChatPage = ({
                 </Button>
               </form>
             </div>
+          </div>
+          <div className="user-list">
+            {peerIDList.map((peerID) => {
+              let colourNum = `${crc32.str(peerID).toString(16)}`;
+              colourNum.padEnd(7, "0");
+              let colour = `#${colourNum.slice(1, 7)}`;
+              console.log(colour);
+              console.log("=====");
+              console.log(colourNum);
+              return (
+                <p
+                  className="user"
+                  style={{
+                    backgroundColor: colour,
+                  }}
+                  key={peerID}
+                >
+                  {peerID}
+                </p>
+              );
+            })}
           </div>
         </section>
       </header>
