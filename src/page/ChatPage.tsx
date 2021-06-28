@@ -30,35 +30,48 @@ const ChatPage = ({
   const addConn = (newConnection: Peer.DataConnection) => {
     connList.push(newConnection);
     peerIDList.push(newConnection.peer);
+    console.log(peerIDList);
   };
 
   useEffect(() => {
     if (currentRoom) {
-      if (create) {
-        console.log(peer.id);
-        peer.on("connection", (conn) => {
-          conn.on("data", (data) => {
-            console.log(data);
-            handleData(data);
-          });
-          conn.on("open", () => {
-            conn.send("[Connection Open]");
-            addConn(conn);
-          });
+      peer.on("connection", (conn) => {
+        conn.on("data", (data) => {
+          handleData(data);
         });
-      } else {
+        conn.on("open", () => {
+          conn.send(
+            JSON.stringify({
+              sender: peer.id,
+              type: "connection",
+              content: "Connection Open",
+            })
+          );
+          addConn(conn);
+          conn.send(
+            JSON.stringify({
+              sender: peer.id,
+              type: "peerIDList",
+              content: peerIDList,
+            })
+          );
+        });
+      });
+      if (!create) {
         let conn = peer.connect(currentRoom);
         addConn(conn);
-        console.log(conn);
-        console.log("Connecting");
         if (conn !== undefined) {
-          console.log("Defining");
           conn.on("data", (data) => {
-            console.log(data);
             handleData(data);
           });
           conn.on("open", () => {
-            conn.send("[Connection Open]");
+            conn.send(
+              JSON.stringify({
+                sender: peer.id,
+                type: "connection",
+                content: "Connection Open",
+              })
+            );
           });
         }
       }
@@ -71,6 +84,30 @@ const ChatPage = ({
       case "message":
         appendDataMessage(message);
         break;
+      case "connection":
+        console.log(`[Connection] ${message.content}`);
+        break;
+      case "peerIDList":
+        message.content.map((peerID: any) => {
+          if (peerID != peer.id && peerIDList.indexOf(peerID) === -1) {
+            let conn = peer.connect(peerID);
+            addConn(conn);
+            if (conn !== undefined) {
+              conn.on("data", (data) => {
+                handleData(data);
+              });
+              conn.on("open", () => {
+                conn.send(
+                  JSON.stringify({
+                    sender: peer.id,
+                    type: "connection",
+                    content: "Connection Open",
+                  })
+                );
+              });
+            }
+          }
+        });
     }
   };
 
