@@ -178,8 +178,8 @@ const ChatPage = ({
         );
         return null;
       });
-      setInputMessage("");
     }
+    setInputMessage("");
   };
 
   const goHome = () => {
