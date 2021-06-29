@@ -165,8 +165,7 @@ const ChatPage = ({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setInputMessage(inputMessage.trim());
-    if (inputMessage) {
+    if (inputMessage.trim()) {
       appendMessage({ sender: "You", content: inputMessage });
       console.log(peer);
       connList.map((connection) => {
