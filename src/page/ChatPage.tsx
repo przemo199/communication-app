@@ -24,21 +24,14 @@ const ChatPage = ({
   const chatRef = useRef<HTMLDivElement>(null);
   const [connList, setConnList] = useState<Peer.DataConnection[]>([]);
   const [peerIDList, setPeerIDList] = useState<string[]>([]);
-  let [peer, setPeer] = useState<Peer>(new Peer());
+  const [peer, setPeer] = useState<Peer>(new Peer());
   const [yourID, setYourID] = useState("");
 
   useEffect(() => {
-    var tempPeer = new Peer();
-    console.log(peer.id);
-    peer = tempPeer;
+    let tempPeer = new Peer();
     setPeer(tempPeer);
-    tempPeer.on("open", (id) => {
-      console.log(id);
-    });
     peer.on("open", (id) => {
       setYourID(id);
-      console.log(id);
-      console.log(peer.id);
       if (!create) {
         connectToPeer(currentRoom, peer);
       }
