@@ -14,7 +14,7 @@ import "./ChatPage.css";
 const ChatPage = ({
   setCurrentPage,
   currentRoom,
-  create,
+  create
 }: {
   setCurrentPage: Dispatch<SetStateAction<string>>;
   currentRoom: string;
@@ -28,6 +28,7 @@ const ChatPage = ({
   const [yourID, setYourID] = useState("");
 
   useEffect(() => {
+    peer.disconnect();
     let tempPeer = new Peer(create ? currentRoom : undefined);
     setPeer(tempPeer);
     peer = tempPeer;
@@ -88,7 +89,7 @@ const ChatPage = ({
     console.log(peerID);
     console.log(peer.id);
     console.log(tempPeer.id);
-    var conn = tempPeer.connect(peerID);
+    let conn = tempPeer.connect(peerID);
     try {
       conn.on("open", () => {
         addConn(conn);
@@ -154,8 +155,7 @@ const ChatPage = ({
         title.textContent = data.sender;
         let colourNum = `${crc32.str(data.sender).toString(16)}`;
         colourNum = colourNum.padEnd(7, "0");
-        let colour = `#${colourNum.slice(1, 7)}`;
-        title.style.backgroundColor = colour;
+        title.style.backgroundColor = `#${colourNum.slice(1, 7)}`;
         divNode.appendChild(title);
         divNode.appendChild(textNode);
         chatRef.current.appendChild(divNode);
