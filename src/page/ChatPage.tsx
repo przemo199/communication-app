@@ -1,5 +1,11 @@
-import React, {Dispatch, SetStateAction, useEffect, useRef, useState} from "react";
-import {Button, Form} from "react-bootstrap";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { Button, Form } from "react-bootstrap";
 import Clock from "../components/ClockHook";
 import Peer from "peerjs";
 import crc32 from "crc-32";
@@ -8,7 +14,7 @@ import "./ChatPage.css";
 const ChatPage = ({
   setCurrentPage,
   currentRoom,
-  create
+  create,
 }: {
   setCurrentPage: Dispatch<SetStateAction<string>>;
   currentRoom: string;
@@ -21,39 +27,37 @@ const ChatPage = ({
   const [peer, setPeer] = useState<Peer>(new Peer());
 
   useEffect(() => {
-    if (create) {
-      peer.destroy();
-      setPeer(new Peer(currentRoom));
-    } else {
-      peer.destroy();
-      setPeer(new Peer());
-    }
-    // this now runs for all users in chat.
-    peer.on("connection", (conn) => {
+    peer.destroy();
+    var tempPeer = new Peer();
+    tempPeer.on("open", (id) => {
+      setPeer(tempPeer);
+      if (!create) {
+        connectToPeer(currentRoom, tempPeer);
+      }
+    });
+
+    tempPeer.on("connection", (conn) => {
       conn.on("data", (data) => {
         handleData(data);
       });
       conn.on("open", () => {
         conn.send(
           JSON.stringify({
-            sender: peer.id,
+            sender: tempPeer.id,
             type: "connection",
-            content: "Connection Open"
+            content: "Connection Open",
           })
         );
         addConn(conn);
         conn.send(
           JSON.stringify({
-            sender: peer.id,
+            sender: tempPeer.id,
             type: "peerIDList",
-            content: peerIDList
+            content: peerIDList,
           })
         );
       });
     });
-    if (!create) {
-      connectToPeer(currentRoom);
-    }
   }, []);
 
   const addConn = (newConnection: Peer.DataConnection) => {
@@ -63,22 +67,27 @@ const ChatPage = ({
     console.log(peerIDList);
   };
 
-  const connectToPeer = (peerID: string) => {
-    let conn = peer.connect(peerID);
-    addConn(conn);
-    if (conn !== undefined) {
-      conn.on("data", (data) => {
-        handleData(data);
-      });
+  const connectToPeer = (peerID: string, tempPeer: Peer) => {
+    console.log(peerID);
+    console.log(peer.id);
+    console.log(tempPeer.id);
+    var conn = tempPeer.connect(peerID);
+    try {
       conn.on("open", () => {
+        addConn(conn);
         conn.send(
           JSON.stringify({
-            sender: peer.id,
+            sender: tempPeer.id,
             type: "connection",
-            content: "Connection Open"
+            content: "Connection Open",
           })
         );
       });
+      conn.on("data", (data) => {
+        handleData(data);
+      });
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -94,7 +103,7 @@ const ChatPage = ({
       case "peerIDList":
         message.content.map((peerID: string) => {
           if (peerID !== peer.id && peerIDList.indexOf(peerID) === -1) {
-            connectToPeer(peerID);
+            connectToPeer(peerID, peer);
           }
           return null;
         });
@@ -117,8 +126,8 @@ const ChatPage = ({
       }
       if (lastTitle && lastTitle.getAttribute("sender") === data.sender) {
         chatRef.current.children[
-        chatRef.current.children.length - 1
-          ].appendChild(textNode);
+          chatRef.current.children.length - 1
+        ].appendChild(textNode);
       } else {
         let divNode = document.createElement("section");
         divNode.classList.add(data.sender === "You" ? "you" : "foreign");
@@ -139,13 +148,13 @@ const ChatPage = ({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    appendMessage({sender: "You", content: inputMessage});
+    appendMessage({ sender: "You", content: inputMessage });
     connList.map((connection) => {
       connection.send(
         JSON.stringify({
           sender: peer.id,
           type: "message",
-          content: inputMessage
+          content: inputMessage,
         })
       );
       return null;
@@ -165,7 +174,7 @@ const ChatPage = ({
       <header className="App-header">
         <section className="top-bar">
           <Button onClick={() => goHome()}>Home</Button>
-          <Clock/>
+          <Clock />
         </section>
         <h2 className="YourID">Your ID: {peer.id}</h2>
         <section className="main">
@@ -200,7 +209,7 @@ const ChatPage = ({
                 <p
                   className="user"
                   style={{
-                    backgroundColor: colour
+                    backgroundColor: colour,
                   }}
                   key={peerID}
                 >
