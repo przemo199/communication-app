@@ -17,7 +17,7 @@ const MainPage = ({
 
   const generateRandomRoomNumber = () => {
     const randomNumber = Math.round(Math.random() * 100000000);
-    setRoomNumber(`#${randomNumber}`);
+    setRoomNumber(`${randomNumber}`);
   };
 
   const mainNavButtons = () => {

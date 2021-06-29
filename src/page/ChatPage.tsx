@@ -24,12 +24,13 @@ const ChatPage = ({
   const chatRef = useRef<HTMLDivElement>(null);
   const [connList, setConnList] = useState<Peer.DataConnection[]>([]);
   const [peerIDList, setPeerIDList] = useState<string[]>([]);
-  const [peer, setPeer] = useState<Peer>(new Peer());
+  let [peer, setPeer] = useState<Peer>(new Peer());
   const [yourID, setYourID] = useState("");
 
   useEffect(() => {
-    let tempPeer = new Peer();
+    let tempPeer = new Peer(create ? currentRoom : undefined);
     setPeer(tempPeer);
+    peer = tempPeer;
     peer.on("open", (id) => {
       setYourID(id);
       if (!create) {
@@ -62,6 +63,7 @@ const ChatPage = ({
   }, []);
 
   const addConn = (newConnection: Peer.DataConnection) => {
+    console.log(newConnection);
     connList.push(newConnection);
     peerIDList.push(newConnection.peer);
     setPeerIDList([...peerIDList]);
@@ -150,6 +152,7 @@ const ChatPage = ({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     appendMessage({ sender: "You", content: inputMessage });
+    console.log(peer);
     connList.map((connection) => {
       connection.send(
         JSON.stringify({
@@ -203,9 +206,6 @@ const ChatPage = ({
               let colourNum = `${crc32.str(peerID).toString(16)}`;
               colourNum = colourNum.padEnd(7, "0");
               let colour = `#${colourNum.slice(1, 7)}`;
-              console.log(colour);
-              console.log("=====");
-              console.log(colourNum);
               return (
                 <p
                   className="user"
