@@ -59,6 +59,20 @@ const ChatPage = ({
           })
         );
       });
+      conn.on("close", () => {
+        console.log("Poop");
+        console.log(conn.label);
+      });
+
+      conn.on("disconnected", () => {
+        console.log("Poop");
+        console.log(conn.label);
+      });
+
+      conn.on("error", () => {
+        console.log("Poop");
+        console.log(conn.label);
+      });
     });
   }, []);
 
@@ -151,19 +165,22 @@ const ChatPage = ({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    appendMessage({ sender: "You", content: inputMessage });
-    console.log(peer);
-    connList.map((connection) => {
-      connection.send(
-        JSON.stringify({
-          sender: peer.id,
-          type: "message",
-          content: inputMessage,
-        })
-      );
-      return null;
-    });
-    setInputMessage("");
+    setInputMessage(inputMessage.trim());
+    if (inputMessage) {
+      appendMessage({ sender: "You", content: inputMessage });
+      console.log(peer);
+      connList.map((connection) => {
+        connection.send(
+          JSON.stringify({
+            sender: peer.id,
+            type: "message",
+            content: inputMessage,
+          })
+        );
+        return null;
+      });
+      setInputMessage("");
+    }
   };
 
   const goHome = () => {
