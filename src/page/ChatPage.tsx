@@ -24,26 +24,34 @@ const ChatPage = ({
   const chatRef = useRef<HTMLDivElement>(null);
   const [connList, setConnList] = useState<Peer.DataConnection[]>([]);
   const [peerIDList, setPeerIDList] = useState<string[]>([]);
-  const [peer, setPeer] = useState<Peer>(new Peer());
+  let [peer, setPeer] = useState<Peer>(new Peer());
+  const [yourID, setYourID] = useState("");
 
   useEffect(() => {
-    peer.destroy();
     var tempPeer = new Peer();
+    console.log(peer.id);
+    peer = tempPeer;
+    setPeer(tempPeer);
     tempPeer.on("open", (id) => {
-      setPeer(tempPeer);
+      console.log(id);
+    });
+    peer.on("open", (id) => {
+      setYourID(id);
+      console.log(id);
+      console.log(peer.id);
       if (!create) {
-        connectToPeer(currentRoom, tempPeer);
+        connectToPeer(currentRoom, peer);
       }
     });
 
-    tempPeer.on("connection", (conn) => {
+    peer.on("connection", (conn) => {
       conn.on("data", (data) => {
         handleData(data);
       });
       conn.on("open", () => {
         conn.send(
           JSON.stringify({
-            sender: tempPeer.id,
+            sender: peer.id,
             type: "connection",
             content: "Connection Open",
           })
@@ -51,7 +59,7 @@ const ChatPage = ({
         addConn(conn);
         conn.send(
           JSON.stringify({
-            sender: tempPeer.id,
+            sender: peer.id,
             type: "peerIDList",
             content: peerIDList,
           })
@@ -176,7 +184,7 @@ const ChatPage = ({
           <Button onClick={() => goHome()}>Home</Button>
           <Clock />
         </section>
-        <h2 className="YourID">Your ID: {peer.id}</h2>
+        <h2 className="YourID">Your ID: {yourID}</h2>
         <section className="main">
           <div className="peopleList"></div>
           <div className="chat-main">
