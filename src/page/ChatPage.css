@@ -9,12 +9,23 @@
   height: 100%;
 }
 
+.Chat-window {
+  background-color: #282c34;
+  min-height: 100vh;
+  /*display: flex;*/
+  /*flex-direction: column;*/
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
 .top-bar {
   display: flex;
   width: 100%;
   padding: 1em;
   justify-content: space-between;
-  max-width: 1300px;
 }
 
 .App-header .title {
@@ -24,9 +35,9 @@
 }
 
 .main {
-  width: 100%;
+  width: 25%;
   flex-grow: 1;
-  flex-direction: column;
+  float: right;
   justify-content: end;
   max-width: 1300px;
   padding: 1em;
@@ -72,6 +83,12 @@
   width: fit-content;
   flex-grow: 1;
 }
+
 .input .btn {
   text-align: center;
+}
+
+.vid {
+  width: 400px;
+  height: 400px;
 }

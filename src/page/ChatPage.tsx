@@ -11,25 +11,36 @@ import Peer from "peerjs";
 import crc32 from "crc-32";
 import "./ChatPage.css";
 
+const constraints = {
+  audio: true,
+  video: {
+    width: 1280,
+    height: 720
+  }
+}
+
 const ChatPage = ({
   setCurrentPage,
   currentRoom,
   create
 }: {
-  setCurrentPage: Dispatch<SetStateAction<string>>;
-  currentRoom: string;
-  create: boolean;
+  setCurrentPage: Dispatch<SetStateAction<string>>,
+  currentRoom: string,
+  create: boolean
 }) => {
   const [inputMessage, setInputMessage] = useState<string>("");
   const chatRef = useRef<HTMLDivElement>(null);
+  const localVideoRef = useRef<HTMLVideoElement>(null);
+  const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const [connList, setConnList] = useState<Peer.DataConnection[]>([]);
   const [peerIDList, setPeerIDList] = useState<string[]>([]);
-  let [peer, setPeer] = useState<Peer>(new Peer());
+  let [peer, setPeer] = useState<Peer>(new Peer({debug: 3}));
   const [yourID, setYourID] = useState("");
+  const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
     peer.disconnect();
-    let tempPeer = new Peer(create ? currentRoom : undefined);
+    let tempPeer = new Peer(create ? currentRoom : undefined, {debug: 3});
     setPeer(tempPeer);
     peer = tempPeer;
     peer.on("open", (id) => {
@@ -43,6 +54,7 @@ const ChatPage = ({
       conn.on("data", (data) => {
         handleData(data);
       });
+
       conn.on("open", () => {
         conn.send(
           JSON.stringify({
@@ -51,7 +63,9 @@ const ChatPage = ({
             content: "Connection Open",
           })
         );
+
         addConn(conn);
+
         conn.send(
           JSON.stringify({
             sender: peer.id,
@@ -60,35 +74,77 @@ const ChatPage = ({
           })
         );
       });
+
       conn.on("close", () => {
-        console.log("Poop");
-        console.log(conn.label);
+        console.log("Connection closed: " + conn.label);
       });
 
       conn.on("disconnected", () => {
-        console.log("Poop");
-        console.log(conn.label);
+        console.log("Connection interrupted: " + conn.label);
       });
 
-      conn.on("error", () => {
-        console.log("Poop");
-        console.log(conn.label);
+      conn.on("error", (e) => {
+        console.error(e);
       });
     });
+
+    peer.on("call", (call) => {
+      call.answer(mediaStream ? mediaStream : undefined);
+      call.on("stream", (stream) => {
+        console.log("steam event")
+        if (remoteVideoRef.current) {
+          console.log("stream set")
+          remoteVideoRef.current.srcObject = stream;
+        } else {
+          console.log("no video element")
+        }
+      });
+    });
+
+    return () => {
+      peer.destroy();
+    }
   }, []);
+
+  useEffect(() =>  {
+    async function enableStream() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        setMediaStream(stream);
+      } catch(e) {
+        console.error(e)
+      }
+    }
+
+    if (!mediaStream) {
+      enableStream();
+    }
+
+    if (mediaStream && localVideoRef.current) {
+      localVideoRef.current.srcObject = mediaStream;
+      if (!create) {
+        let call = peer.call(currentRoom, mediaStream);
+        call.on("stream", (stream) => {
+          console.log("steam event")
+          if (remoteVideoRef.current) {
+            console.log("stream set")
+            remoteVideoRef.current.srcObject = stream;
+          } else {
+            console.log("no video element")
+          }
+        });
+      }
+    }
+  }, [localVideoRef, mediaStream]);
 
   const addConn = (newConnection: Peer.DataConnection) => {
     console.log(newConnection);
     connList.push(newConnection);
     peerIDList.push(newConnection.peer);
     setPeerIDList([...peerIDList]);
-    console.log(peerIDList);
   };
 
   const connectToPeer = (peerID: string, tempPeer: Peer) => {
-    console.log(peerID);
-    console.log(peer.id);
-    console.log(tempPeer.id);
     let conn = tempPeer.connect(peerID);
     try {
       conn.on("open", () => {
@@ -119,17 +175,16 @@ const ChatPage = ({
         console.log(`[Connection] ${message.content}`);
         break;
       case "peerIDList":
-        message.content.map((peerID: string) => {
+        message.content.forEach((peerID: string) => {
           if (peerID !== peer.id && peerIDList.indexOf(peerID) === -1) {
             connectToPeer(peerID, peer);
           }
-          return null;
         });
     }
   };
 
   const appendMessage = (data: any) => {
-    if (chatRef.current !== null) {
+    if (chatRef.current) {
       let textNode = document.createElement("p");
       let date = new Date();
       textNode.textContent =
@@ -167,8 +222,7 @@ const ChatPage = ({
     e.preventDefault();
     if (inputMessage.trim()) {
       appendMessage({ sender: "You", content: inputMessage });
-      console.log(peer);
-      connList.map((connection) => {
+      connList.forEach((connection) => {
         connection.send(
           JSON.stringify({
             sender: peer.id,
@@ -176,7 +230,6 @@ const ChatPage = ({
             content: inputMessage,
           })
         );
-        return null;
       });
     }
     setInputMessage("");
@@ -191,12 +244,15 @@ const ChatPage = ({
 
   return (
     <div className="App">
-      <header className="App-header">
+      <header className="Chat-window">
         <section className="top-bar">
           <Button onClick={() => goHome()}>Home</Button>
+          {peer.id && <h2 className="YourID">Your ID: {yourID}</h2>}
+          {!peer.id && <h2 className="YourID">Connecting...</h2>}
           <Clock />
         </section>
-        <h2 className="YourID">Your ID: {yourID}</h2>
+        <video className="vid" ref={localVideoRef} autoPlay></video>
+        <video className="vid" ref={remoteVideoRef} autoPlay></video>
         <section className="main">
           <div className="peopleList"></div>
           <div className="chat-main">

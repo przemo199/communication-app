@@ -95,7 +95,6 @@ const MainPage = ({
     <div className="App">
       <header className="App-header">
         <Clock />
-        <h2>Your ID : </h2>
         {MainComponent()}
         {pageState === "main" && mainNavButtons()}
         {pageState === "createChatRoom" && createJoinChatRoom()}

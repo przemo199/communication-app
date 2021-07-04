@@ -1,10 +1,6 @@
 {
-  "type": "module",
   "name": "communication-app",
   "version": "0.1.0",
-  "license": "ISC",
-  "private": true,
-  "main": "./src/server/index.ts",
   "contributors": [
     "Przemek Kaminski <przemyslaw.m.kaminski@gmail.com> (https://www.linkedin.com/in/przemekkaminski/)",
     "Adam Tomaszewski <adam.tomaszewski@hotmail.co.uk> (https://www.linkedin.com/in/adam-tomaszewski-9838a11bb/)"
@@ -28,23 +24,18 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "@types/express": "^4.17.12",
-    "@types/jest": "^26.0.23",
     "@types/node": "^15.6.0",
+    "fixpack": "^4.0.0",
+    "jest": "^26.6.0",
     "puppeteer": "^10.1.0",
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
     "ts-node": "^10.0.0",
     "typescript": "^4.3.2"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "heroku-postbuild": "npm run build && cd src/server && tsc",
-    "start-server": "node ./server-dist/index.js",
-    "build-server": "cd src/server && tsc",
-    "build-and-start-all": "npm run build && npm run build-server && npm run start-server"
+  "engines": {
+    "node": "16.x",
+    "npm": "7.x"
   },
   "eslintConfig": {
     "extends": [
@@ -52,23 +43,21 @@
       "react-app/jest"
     ]
   },
+  "license": "ISC",
+  "main": "./src/server/index.ts",
+  "private": true,
+  "scripts": {
+    "build": "react-scripts build",
+    "build-and-start-all": "npm run build && npm run build-server && npm run start-server",
+    "build-server": "cd src/server && tsc",
+    "eject": "react-scripts eject",
+    "heroku-postbuild": "npm run build && cd src/server && tsc",
+    "start": "react-scripts start",
+    "start-server": "node ./server-dist/index.js",
+    "test": "react-scripts test"
+  },
   "stylelint": {
     "extends": "stylelint-config-standard"
   },
-  "engines": {
-    "node": "16.x",
-    "npm": "7.x"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+  "type": "module"
 }
