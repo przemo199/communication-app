@@ -1,11 +1,5 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { Button, Form } from "react-bootstrap";
+import React, {Dispatch, SetStateAction, useEffect, useRef, useState} from "react";
+import {Button, Form} from "react-bootstrap";
 import Clock from "../components/ClockHook";
 import Peer from "peerjs";
 import crc32 from "crc-32";
@@ -60,7 +54,7 @@ const ChatPage = ({
           JSON.stringify({
             sender: peer.id,
             type: "connection",
-            content: "Connection Open",
+            content: "Connection Open"
           })
         );
 
@@ -70,7 +64,7 @@ const ChatPage = ({
           JSON.stringify({
             sender: peer.id,
             type: "peerIDList",
-            content: peerIDList,
+            content: peerIDList
           })
         );
       });
@@ -89,9 +83,11 @@ const ChatPage = ({
     });
 
     peer.on("call", (call) => {
+      console.log("media printed");
+      console.log(mediaStream ? mediaStream.id : undefined);
       call.answer(mediaStream ? mediaStream : undefined);
-      call.on("stream", (stream) => {
-        console.log("steam event")
+      call.on("stream", (stream: MediaStream) => {
+        console.log("stream event")
         if (remoteVideoRef.current) {
           console.log("stream set")
           remoteVideoRef.current.srcObject = stream;
@@ -106,26 +102,28 @@ const ChatPage = ({
     }
   }, []);
 
-  useEffect(() =>  {
-    async function enableStream() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        setMediaStream(stream);
-      } catch(e) {
-        console.error(e)
-      }
-    }
-
+  useEffect(() => {
     if (!mediaStream) {
-      enableStream();
+      (async () => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia(constraints);
+          setMediaStream(stream);
+        } catch (e) {
+          console.error(e)
+        }
+        console.log("done")
+      })();
     }
 
     if (mediaStream && localVideoRef.current) {
       localVideoRef.current.srcObject = mediaStream;
       if (!create) {
-        let call = peer.call(currentRoom, mediaStream);
+        console.log("mediaPrint")
+        console.log(mediaStream);
+        const call = peer.call(currentRoom, mediaStream);
+        console.log("calling")
         call.on("stream", (stream) => {
-          console.log("steam event")
+          console.log("stream event")
           if (remoteVideoRef.current) {
             console.log("stream set")
             remoteVideoRef.current.srcObject = stream;
@@ -135,10 +133,9 @@ const ChatPage = ({
         });
       }
     }
-  }, [localVideoRef, mediaStream]);
+  }, [peer, localVideoRef, mediaStream]);
 
   const addConn = (newConnection: Peer.DataConnection) => {
-    console.log(newConnection);
     connList.push(newConnection);
     peerIDList.push(newConnection.peer);
     setPeerIDList([...peerIDList]);
@@ -153,7 +150,7 @@ const ChatPage = ({
           JSON.stringify({
             sender: tempPeer.id,
             type: "connection",
-            content: "Connection Open",
+            content: "Connection Open"
           })
         );
       });
@@ -199,8 +196,8 @@ const ChatPage = ({
       }
       if (lastTitle && lastTitle.getAttribute("sender") === data.sender) {
         chatRef.current.children[
-          chatRef.current.children.length - 1
-        ].appendChild(textNode);
+        chatRef.current.children.length - 1
+          ].appendChild(textNode);
       } else {
         let divNode = document.createElement("section");
         divNode.classList.add(data.sender === "You" ? "you" : "foreign");
@@ -221,13 +218,13 @@ const ChatPage = ({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (inputMessage.trim()) {
-      appendMessage({ sender: "You", content: inputMessage });
+      appendMessage({sender: "You", content: inputMessage});
       connList.forEach((connection) => {
         connection.send(
           JSON.stringify({
             sender: peer.id,
             type: "message",
-            content: inputMessage,
+            content: inputMessage
           })
         );
       });
@@ -247,9 +244,8 @@ const ChatPage = ({
       <header className="Chat-window">
         <section className="top-bar">
           <Button onClick={() => goHome()}>Home</Button>
-          {peer.id && <h2 className="YourID">Your ID: {yourID}</h2>}
-          {!peer.id && <h2 className="YourID">Connecting...</h2>}
-          <Clock />
+          <h2 className="YourID">{peer.id ? "Your ID: " +  yourID : "Connecting..."}</h2>
+          <Clock/>
         </section>
         <video className="vid" ref={localVideoRef} autoPlay></video>
         <video className="vid" ref={remoteVideoRef} autoPlay></video>
@@ -282,7 +278,7 @@ const ChatPage = ({
                 <p
                   className="user"
                   style={{
-                    backgroundColor: colour,
+                    backgroundColor: colour
                   }}
                   key={peerID}
                 >

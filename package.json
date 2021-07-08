@@ -1,6 +1,11 @@
 {
   "name": "communication-app",
   "version": "0.1.0",
+  "browserslist": [
+    "last 3 chrome version",
+    "last 2 firefox version",
+    "last 2 safari version"
+  ],
   "contributors": [
     "Przemek Kaminski <przemyslaw.m.kaminski@gmail.com> (https://www.linkedin.com/in/przemekkaminski/)",
     "Adam Tomaszewski <adam.tomaszewski@hotmail.co.uk> (https://www.linkedin.com/in/adam-tomaszewski-9838a11bb/)"
