@@ -31,6 +31,7 @@ const ChatPage = ({
   let [peer, setPeer] = useState<Peer>(new Peer({debug: 3}));
   const [yourID, setYourID] = useState("");
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
+  const [incomingMediaStream, setIncomingMediaStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
     peer.disconnect();
@@ -142,7 +143,7 @@ const ChatPage = ({
   };
 
   const connectToPeer = (peerID: string, tempPeer: Peer) => {
-    let conn = tempPeer.connect(peerID);
+    const conn = tempPeer.connect(peerID);
     try {
       conn.on("open", () => {
         addConn(conn);
@@ -247,12 +248,12 @@ const ChatPage = ({
           <h2 className="YourID">{peer.id ? "Your ID: " +  yourID : "Connecting..."}</h2>
           <Clock/>
         </section>
-        <video className="vid" ref={localVideoRef} autoPlay></video>
-        <video className="vid" ref={remoteVideoRef} autoPlay></video>
+        <video className="vid" ref={localVideoRef} autoPlay/>
+        <video className="vid" ref={remoteVideoRef} autoPlay/>
         <section className="main">
-          <div className="peopleList"></div>
+          <div className="peopleList"/>
           <div className="chat-main">
-            <div className="chat" ref={chatRef}></div>
+            <div className="chat" ref={chatRef}/>
             <div className="input">
               <form onSubmit={handleSubmit}>
                 <Form.Control

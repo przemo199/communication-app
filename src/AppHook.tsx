@@ -3,7 +3,7 @@ import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import MainPage from "./page/MainPage";
 import ErrorPage from "./page/ErrorPage";
-import ChatPage from "./page/ChatPage";
+import ChatPage from "./page/ChatPageClass";
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState<string>("mainPage");

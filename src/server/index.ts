@@ -1,7 +1,8 @@
-import * as path from 'path';
-import {fileURLToPath} from 'url';
-import express from 'express';
-import http from 'http';
+import * as path from "path";
+import {fileURLToPath} from "url";
+import express from "express";
+import http from "http";
+import {ExpressPeerServer} from "peer"
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,6 +19,9 @@ app.get('/', (req, res) => {
 });
 
 const server = http.createServer(app);
+const peerServer = ExpressPeerServer(server);
+app.use("/peerjs", peerServer);
+
 server.listen(PORT, () => {
   console.log(`server started on port ${PORT}`);
 });

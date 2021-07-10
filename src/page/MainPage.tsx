@@ -93,6 +93,7 @@ const MainPage = ({
 
   return (
     <div className="App">
+      {console.log("render")}
       <header className="App-header">
         <Clock />
         {MainComponent()}
