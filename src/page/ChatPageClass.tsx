@@ -125,17 +125,26 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
             this.localVideoRef.current.srcObject = this.state.mediaStream;
           }
 
-          this.state.conns.forEach(conn => {
-              console.log("calling");
-              let call = this.state.peer.call(conn.peer, this.state.mediaStream!);
-              call.on("stream", str => {
-                console.log("stream received");
-                if (this.remoteVideoRef.current) {
-                  this.remoteVideoRef.current.srcObject = str;
-                }
-              });
-            }
-          )
+          if (!this.props.create) {
+            let call = this.state.peer.call(this.props.currentRoom, this.state.mediaStream!);
+            call.on("stream", str => {
+              console.log("stream received");
+              if (this.remoteVideoRef.current) {
+                this.remoteVideoRef.current.srcObject = str;
+              }
+            });
+          }
+          // this.state.conns.forEach(conn => {
+          //     console.log("calling");
+          //     let call = this.state.peer.call(conn.peer, this.state.mediaStream!);
+          //     call.on("stream", str => {
+          //       console.log("stream received");
+          //       if (this.remoteVideoRef.current) {
+          //         this.remoteVideoRef.current.srcObject = str;
+          //       }
+          //     });
+          //   }
+          // )
         })
       });
     }
