@@ -99,8 +99,9 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
     });
 
     this.state.peer.on("call", call => {
-        call.answer(this.state.mediaStream ? this.state.mediaStream : undefined);
+        call.answer(this.state.mediaStream || undefined);
         call.on("stream", stream => {
+          console.log("stream received (in mount)");
           if (this.remoteVideoRef.current) {
             this.remoteVideoRef.current.srcObject = stream;
           }
@@ -112,29 +113,31 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
   }
 
   componentWillUnmount() {
+    this.state.conns.forEach(conn => conn.close());
     this.state.peer.destroy();
   }
 
   getMediaStream = () => {
     if (!this.state.mediaStream) {
-      navigator.mediaDevices.getUserMedia(constraints).then(stream =>
+      navigator.mediaDevices.getUserMedia(constraints).then(stream => {
         this.setState({mediaStream: stream}, () => {
           if (this.localVideoRef.current) {
             this.localVideoRef.current.srcObject = this.state.mediaStream;
           }
-          if (this.state.mediaStream) {
-            this.state.conns.forEach(
-              conn => {
-                let call = this.state.peer.call(conn.peer, this.state.mediaStream as MediaStream);
-                call.on("stream", stream => {
-                  if (this.remoteVideoRef.current) {
-                    this.remoteVideoRef.current.srcObject = stream;
-                  }
-                });
-              }
-            )
-          }
-        }));
+
+          this.state.conns.forEach(conn => {
+              console.log("calling");
+              let call = this.state.peer.call(conn.peer, this.state.mediaStream!);
+              call.on("stream", str => {
+                console.log("stream received");
+                if (this.remoteVideoRef.current) {
+                  this.remoteVideoRef.current.srcObject = str;
+                }
+              });
+            }
+          )
+        })
+      });
     }
   }
 
@@ -253,13 +256,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
                 colourNum = colourNum.padEnd(7, "0");
                 let colour = `#${colourNum.slice(1, 7)}`;
                 return (
-                  <p
-                    className="user"
-                    style={{
-                      backgroundColor: colour
-                    }}
-                    key={conn.peer}
-                  >
+                  <p className="user" style={{backgroundColor: colour}} key={conn.peer}>
                     {conn.peer}
                   </p>
                 );
