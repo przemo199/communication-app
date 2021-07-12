@@ -63,13 +63,12 @@
   background-color: darkolivegreen;
 }
 
-.chat .foreign p {
-  text-align: left;
+.you {
+  text-align: right;
 }
 
-.chat .foreign .title {
+.received {
   text-align: left;
-  background-color: darkslateblue;
 }
 
 .input form {

@@ -37,7 +37,7 @@ const ChatPage = ({
     peer.disconnect();
     let tempPeer = new Peer(create ? currentRoom : undefined, {debug: 3});
     setPeer(tempPeer);
-    peer = tempPeer;
+
     peer.on("open", (id) => {
       setYourID(id);
       if (!create) {

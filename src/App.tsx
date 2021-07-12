@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Button, Form } from "react-bootstrap";
+import {Button, Form} from "react-bootstrap";
 import Clock from "./components/Clock";
 import MainComponent from "./components/MainComponent";
 
@@ -16,12 +16,12 @@ class App extends React.Component<any, AppState> {
     super(props);
     this.currentPage = "mainPage";
     this.state = {
-      view: "buttons",
+      view: "buttons"
     };
   }
 
   setView = (view: string) => {
-    this.setState({ view: view });
+    this.setState({view: view});
   };
 
   render() {
@@ -30,9 +30,9 @@ class App extends React.Component<any, AppState> {
         <header className="App-header">
           {MainComponent()}
           <Clock />
-          {this.state.view === "buttons" && Buttons({ setView: this.setView })}
-          {this.state.view === "create" && Create({ setView: this.setView })}
-          {this.state.view === "join" && Join({ setView: this.setView })}
+          {this.state.view === "buttons" && Buttons({setView: this.setView})}
+          {this.state.view === "create" && Create({setView: this.setView})}
+          {this.state.view === "join" && Join({setView: this.setView})}
           {/*{this.state.view === "chat" && chat}*/}
         </header>
       </div>

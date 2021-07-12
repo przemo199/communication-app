@@ -15,7 +15,9 @@ interface ChatState {
   peer: Peer;
   conns: DataConnection[];
   message: string;
-  messages: React.DetailedHTMLProps<any, any>[];
+  messages: React.DetailedHTMLProps<React.HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement>[];
+  mediaStream: MediaStream | null;
+  remoteStreams: MediaStream[];
 }
 
 const constraints = {
@@ -27,20 +29,27 @@ const constraints = {
 }
 
 const peerSettings = {
-  debug : 3,
-  host : "/",
+  debug: 3,
+  host: "/",
   path: "/peerjs"
 }
 
 export default class ChatPage extends React.Component<ChatProps, ChatState> {
+  localVideoRef: React.RefObject<HTMLVideoElement>;
+  remoteVideoRef: React.RefObject<HTMLVideoElement>;
+
   constructor(props: ChatProps) {
     super(props);
     this.state = {
       peer: props.create ? new Peer(props.currentRoom, peerSettings) : new Peer(peerSettings),
       conns: [],
       message: "",
-      messages: []
+      messages: [],
+      mediaStream: null,
+      remoteStreams: []
     }
+    this.localVideoRef = React.createRef();
+    this.remoteVideoRef = React.createRef();
   }
 
   componentDidMount() {
@@ -63,12 +72,13 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
             JSON.stringify({
               sender: this.state.peer.id,
               type: "peerIDList",
-              content: this.state.conns.map(c => c.peer)
+              content: this.state.conns.map(connection => connection.peer)
             })
           );
         });
 
         conn.on("close", () => {
+          this.setState({conns: this.state.conns.filter(connection => connection.peer !== conn.peer)});
           console.log("Connection closed: " + conn.label);
         });
 
@@ -82,12 +92,50 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
       });
     });
 
-    this.state.peer.on("open", (id) => {
-      console.log("peer open")
+    this.state.peer.on("open", () => {
       if (!this.props.create) {
         this.connectToPeer(this.props.currentRoom);
       }
     });
+
+    this.state.peer.on("call", call => {
+        call.answer(this.state.mediaStream ? this.state.mediaStream : undefined);
+        call.on("stream", stream => {
+          if (this.remoteVideoRef.current) {
+            this.remoteVideoRef.current.srcObject = stream;
+          }
+        });
+      }
+    )
+
+    this.getMediaStream();
+  }
+
+  componentWillUnmount() {
+    this.state.peer.destroy();
+  }
+
+  getMediaStream = () => {
+    if (!this.state.mediaStream) {
+      navigator.mediaDevices.getUserMedia(constraints).then(stream =>
+        this.setState({mediaStream: stream}, () => {
+          if (this.localVideoRef.current) {
+            this.localVideoRef.current.srcObject = this.state.mediaStream;
+          }
+          if (this.state.mediaStream) {
+            this.state.conns.forEach(
+              conn => {
+                let call = this.state.peer.call(conn.peer, this.state.mediaStream as MediaStream);
+                call.on("stream", stream => {
+                  if (this.remoteVideoRef.current) {
+                    this.remoteVideoRef.current.srcObject = stream;
+                  }
+                });
+              }
+            )
+          }
+        }));
+    }
   }
 
   connectToPeer = (peerID: string) => {
@@ -127,47 +175,16 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
         });
         break;
       default:
-        console.log("Incorrect data");
+        console.log("Incorrect data type");
     }
   };
 
   appendMessage = (data: any) => {
-    console.log(<p className={data.sender === "You" ? "you" : "foreign"}> data.content </p>);
     this.setState({
       messages: [...this.state.messages,
-        <p className={data.sender === "You" ? "you" : "foreign"}> {data.content} </p>]
+        <p className={data.sender === "You" ? "you" : "received"}>{data.content}</p>]
     });
     console.log(this.state.messages);
-    // let textNode = document.createElement("p");
-    // let date = new Date().toLocaleTimeString();
-    // textNode.textContent =
-    //   data.sender === "You"
-    //     ? data.content + " (" + date + ") "
-    //     : " (" + date + ") " + data.content;
-    // let lastMessage = this.state.messages[this.state.messages.length];
-    // // instead of making wide bar with sender name, show sender name on hover
-    // let lastTitle;
-    // if (lastMessage) {
-    //   lastTitle = lastMessage.children[0];
-    // }
-    // if (lastTitle && lastTitle.getAttribute("sender") === data.sender) {
-    //   chatRef.current.children[
-    //   chatRef.current.children.length - 1
-    //     ].appendChild(textNode);
-    // } else {
-    //   let divNode = document.createElement("section");
-    //   divNode.classList.add(data.sender === "You" ? "you" : "foreign");
-    //   let title = document.createElement("p");
-    //   title.setAttribute("sender", data.sender);
-    //   title.classList.add("title");
-    //   title.textContent = data.sender;
-    //   let colourNum = `${crc32.str(data.sender).toString(16)}`;
-    //   colourNum = colourNum.padEnd(7, "0");
-    //   title.style.backgroundColor = `#${colourNum.slice(1, 7)}`;
-    //   divNode.appendChild(title);
-    //   divNode.appendChild(textNode);
-    //   chatRef.current.appendChild(divNode);
-    // }
   };
 
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -189,16 +206,14 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
   };
 
   goHome = () => {
-    //this.state.peer.destroy();
+    this.state.peer.destroy();
     this.props.setCurrentPage("mainPage");
   };
 
   render() {
     console.log("rendering");
-    console.log(this.state.peer.id)
-    // if(!this.state.peer.id) {
-    //   this.state.peer.reconnect();
-    // }
+    console.log(this.state.peer.id);
+    console.log(this.state.peer.connections);
     return (
       <div className="App">
         <header className="Chat-window">
@@ -208,8 +223,8 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
               className="YourID">{this.state.peer.id ? "Your ID: " + this.state.peer.id : "Connecting..."}</h2>
             <Clock/>
           </section>
-          <video className="vid" autoPlay/>
-          <video className="vid" autoPlay/>
+          <video className="vid" ref={this.localVideoRef} autoPlay muted/>
+          <video className="vid" ref={this.remoteVideoRef} autoPlay/>
           <section className="main">
             <div className="peopleList"/>
             <div className="chat-main">
