@@ -37,6 +37,7 @@ const peerSettings = {
 export default class ChatPage extends React.Component<ChatProps, ChatState> {
   localVideoRef: React.RefObject<HTMLVideoElement>;
   remoteVideoRef: React.RefObject<HTMLVideoElement>;
+  messageNotification: HTMLAudioElement;
 
   constructor(props: ChatProps) {
     super(props);
@@ -50,6 +51,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
     }
     this.localVideoRef = React.createRef();
     this.remoteVideoRef = React.createRef();
+    this.messageNotification = new Audio("/message-notification.mp3");
   }
 
   componentDidMount() {
@@ -126,6 +128,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
           }
 
           if (!this.props.create) {
+            console.log("calling");
             let call = this.state.peer.call(this.props.currentRoom, this.state.mediaStream!);
             call.on("stream", str => {
               console.log("stream received");
@@ -175,6 +178,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
     switch (message.type) {
       case "message":
         this.appendMessage(message);
+        this.messageNotification.play();
         break;
       case "connection":
         console.log(`[Connection] ${message.content}`);
@@ -196,7 +200,6 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
       messages: [...this.state.messages,
         <p className={data.sender === "You" ? "you" : "received"}>{data.content}</p>]
     });
-    console.log(this.state.messages);
   };
 
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -231,8 +234,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
         <header className="Chat-window">
           <section className="top-bar">
             <Button onClick={() => this.goHome()}>Home</Button>
-            <h2
-              className="YourID">{this.state.peer.id ? "Your ID: " + this.state.peer.id : "Connecting..."}</h2>
+            <h2 className="YourID">{this.state.peer.id ? "Your ID: " + this.state.peer.id : "Connecting..."}</h2>
             <Clock/>
           </section>
           <video className="vid" ref={this.localVideoRef} autoPlay muted/>
