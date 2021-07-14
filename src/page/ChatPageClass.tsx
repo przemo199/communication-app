@@ -127,27 +127,29 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
             this.localVideoRef.current.srcObject = this.state.mediaStream;
           }
 
+          // if (!this.props.create) {
+          //   console.log("calling");
+          //   let call = this.state.peer.call(this.props.currentRoom, this.state.mediaStream!);
+          //   call.on("stream", str => {
+          //     console.log("stream received");
+          //     if (this.remoteVideoRef.current) {
+          //       this.remoteVideoRef.current.srcObject = str;
+          //     }
+          //   });
+          // }
           if (!this.props.create) {
-            console.log("calling");
-            let call = this.state.peer.call(this.props.currentRoom, this.state.mediaStream!);
-            call.on("stream", str => {
-              console.log("stream received");
-              if (this.remoteVideoRef.current) {
-                this.remoteVideoRef.current.srcObject = str;
+            this.state.conns.forEach(conn => {
+                console.log("calling");
+                let call = this.state.peer.call(conn.peer, this.state.mediaStream!);
+                call.on("stream", str => {
+                  console.log("stream received");
+                  if (this.remoteVideoRef.current) {
+                    this.remoteVideoRef.current.srcObject = str;
+                  }
+                });
               }
-            });
+            )
           }
-          // this.state.conns.forEach(conn => {
-          //     console.log("calling");
-          //     let call = this.state.peer.call(conn.peer, this.state.mediaStream!);
-          //     call.on("stream", str => {
-          //       console.log("stream received");
-          //       if (this.remoteVideoRef.current) {
-          //         this.remoteVideoRef.current.srcObject = str;
-          //       }
-          //     });
-          //   }
-          // )
         })
       });
     }
@@ -234,7 +236,8 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
         <header className="Chat-window">
           <section className="top-bar">
             <Button onClick={() => this.goHome()}>Home</Button>
-            <h2 className="YourID">{this.state.peer.id ? "Your ID: " + this.state.peer.id : "Connecting..."}</h2>
+            <h2
+              className="YourID">{this.state.peer.id ? "Your ID: " + this.state.peer.id : "Connecting..."}</h2>
             <Clock/>
           </section>
           <video className="vid" ref={this.localVideoRef} autoPlay muted/>
