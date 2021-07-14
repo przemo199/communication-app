@@ -115,7 +115,8 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
   }
 
   componentWillUnmount() {
-    this.state.conns.forEach(conn => conn.close());
+    Object.keys(this.state.peer.connections).forEach(key => this.state.peer.connections[key].close())
+    // this.state.conns.forEach(conn => conn.close());
     this.state.peer.destroy();
   }
 
@@ -138,9 +139,9 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
           //   });
           // }
           if (!this.props.create) {
-            this.state.conns.forEach(conn => {
-                console.log("calling");
-                let call = this.state.peer.call(conn.peer, this.state.mediaStream!);
+            Object.keys(this.state.peer.connections).forEach((conn: string) => {
+                console.log("calling: " + conn);
+                let call = this.state.peer.call(conn, this.state.mediaStream!);
                 call.on("stream", str => {
                   console.log("stream received");
                   if (this.remoteVideoRef.current) {
@@ -157,7 +158,6 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
 
   connectToPeer = (peerID: string) => {
     const conn = this.state.peer.connect(peerID);
-
     conn.on("open", () => {
       this.setState({conns: [...this.state.conns, conn]}, () => {
         conn.send(
