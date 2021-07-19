@@ -104,9 +104,12 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
         conn.peerConnection.addEventListener(
           "iceconnectionstatechange",
           (ev) => {
+            console.log(ev);
             switch (conn.peerConnection.iceConnectionState) {
               case "disconnected": {
                 console.log(`[PeerJS] connection to ${conn.label} lost`);
+                console.log(conn.peer);
+                console.log(conn);
                 break;
               }
               default: {
