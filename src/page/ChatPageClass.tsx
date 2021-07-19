@@ -111,14 +111,16 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
                     (connection) => connection !== conn
                   ),
                 });
-                this.appendMessage({
-                  sender: "You",
-                  content: (
-                    <p>
-                      <em>[Client] Lost Connection to ${conn}</em>
-                    </p>
-                  ),
-                });
+                this.appendMessage(
+                  JSON.stringify({
+                    sender: "You",
+                    content: (
+                      <p>
+                        <em>[Client] Lost Connection to ${conn}</em>
+                      </p>
+                    ),
+                  })
+                );
                 break;
               }
               default: {
@@ -286,8 +288,6 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
             </h2>
             <Clock />
           </section>
-          <video className="vid" ref={this.localVideoRef} autoPlay muted />
-          <video className="vid" ref={this.remoteVideoRef} autoPlay />
           <section className="main">
             <div className="peopleList" />
             <div className="chat-main">
@@ -328,6 +328,8 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
                 );
               })}
             </div>
+            <video className="vid" ref={this.localVideoRef} autoPlay muted />
+            <video className="vid" ref={this.remoteVideoRef} autoPlay />
           </section>
         </header>
       </div>
