@@ -35,6 +35,7 @@ const peerSettings = {
   debug: 3,
   host: "/",
   path: "/peerjs",
+  port: 3001,
 };
 
 export default class ChatPage extends React.Component<ChatProps, ChatState> {
@@ -45,9 +46,10 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
   constructor(props: ChatProps) {
     super(props);
     this.state = {
-      peer: props.create
-        ? new Peer(props.currentRoom, peerSettings)
-        : new Peer(peerSettings),
+      peer: new Peer(
+        props.create ? props.currentRoom : undefined,
+        peerSettings
+      ),
       conns: [],
       message: "",
       messages: [],
@@ -60,8 +62,11 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
   }
 
   componentDidMount() {
+    console.log(this.state.peer);
+    console.log(this.props.currentRoom);
     this.state.peer.on("connection", (conn) => {
       this.setState({ conns: [...this.state.conns, conn] }, () => {
+        console.log("Boop");
         conn.on("data", (data) => {
           this.handleData(data);
         });
@@ -134,6 +139,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
 
     this.state.peer.on("open", () => {
       if (!this.props.create) {
+        console.log("SOMETHING IS HAPPENING");
         this.connectToPeer(this.props.currentRoom);
       }
     });
@@ -149,6 +155,8 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
     });
 
     this.getMediaStream();
+
+    console.log(this.state.peer);
   }
 
   componentWillUnmount() {
@@ -218,7 +226,9 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
     switch (message.type) {
       case "message":
         this.appendMessage(message);
-        this.messageNotification.play();
+        if (!document.hasFocus()) {
+          this.messageNotification.play();
+        }
         break;
       case "connection":
         console.log(`[Connection] ${message.content}`);

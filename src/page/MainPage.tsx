@@ -49,6 +49,7 @@ const MainPage = ({
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("THE BUTTON WAS PRESSED");
     let validRoomNumber = checkRoomNumber(roomNumber);
     if (pageState === "createChatRoom" && validRoomNumber) {
       setCreate(true);
