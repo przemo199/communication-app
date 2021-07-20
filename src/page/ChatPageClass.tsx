@@ -4,6 +4,7 @@ import Clock from "../components/ClockHook";
 import Peer, { DataConnection } from "peerjs";
 import crc32 from "crc-32";
 import "./ChatPage.css";
+import { title } from "process";
 
 interface ChatProps {
   setCurrentPage: Dispatch<SetStateAction<string>>;
@@ -15,12 +16,20 @@ interface ChatState {
   peer: Peer;
   conns: DataConnection[];
   message: string;
-  messages: React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLParagraphElement>,
-    HTMLParagraphElement
-  >[];
+  messages: MessageSection[];
   mediaStream: MediaStream | null;
   remoteStreams: MediaStream[];
+}
+
+interface MessageSection {
+  sender: string;
+  backGroundColour: string;
+  messages: Message[];
+}
+
+interface Message {
+  time: string;
+  message: string;
 }
 
 const constraints = {
@@ -41,6 +50,7 @@ const peerSettings = {
 export default class ChatPage extends React.Component<ChatProps, ChatState> {
   localVideoRef: React.RefObject<HTMLVideoElement>;
   remoteVideoRef: React.RefObject<HTMLVideoElement>;
+  chatRef: React.RefObject<HTMLDivElement>;
   messageNotification: HTMLAudioElement;
 
   constructor(props: ChatProps) {
@@ -58,16 +68,15 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
     };
     this.localVideoRef = React.createRef();
     this.remoteVideoRef = React.createRef();
+    this.chatRef = React.createRef();
     this.messageNotification = new Audio("/message-notification.mp3");
   }
 
   componentDidMount() {
-    console.log(this.state.peer);
-    console.log(this.props.currentRoom);
     this.state.peer.on("connection", (conn) => {
       this.setState({ conns: [...this.state.conns, conn] }, () => {
-        console.log("Boop");
         conn.on("data", (data) => {
+          console.log(data);
           this.handleData(data);
         });
 
@@ -109,6 +118,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
         conn.peerConnection.addEventListener(
           "iceconnectionstatechange",
           (ev) => {
+            console.log(conn.peerConnection.iceConnectionState);
             switch (conn.peerConnection.iceConnectionState) {
               case "disconnected": {
                 this.setState({
@@ -139,7 +149,6 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
 
     this.state.peer.on("open", () => {
       if (!this.props.create) {
-        console.log("SOMETHING IS HAPPENING");
         this.connectToPeer(this.props.currentRoom);
       }
     });
@@ -155,8 +164,6 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
     });
 
     this.getMediaStream();
-
-    console.log(this.state.peer);
   }
 
   componentWillUnmount() {
@@ -169,36 +176,46 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
 
   getMediaStream = () => {
     if (!this.state.mediaStream) {
-      navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-        this.setState({ mediaStream: stream }, () => {
-          if (this.localVideoRef.current) {
-            this.localVideoRef.current.srcObject = this.state.mediaStream;
-          }
+      navigator.mediaDevices
+        .getUserMedia(constraints)
+        .then((stream) => {
+          this.setState({ mediaStream: stream }, () => {
+            if (this.localVideoRef.current) {
+              this.localVideoRef.current.srcObject = this.state.mediaStream;
+            }
 
-          // if (!this.props.create) {
-          //   console.log("calling");
-          //   let call = this.state.peer.call(this.props.currentRoom, this.state.mediaStream!);
-          //   call.on("stream", str => {
-          //     console.log("stream received");
-          //     if (this.remoteVideoRef.current) {
-          //       this.remoteVideoRef.current.srcObject = str;
-          //     }
-          //   });
-          // }
-          if (!this.props.create) {
-            Object.keys(this.state.peer.connections).forEach((conn: string) => {
-              console.log("calling: " + conn);
-              let call = this.state.peer.call(conn, this.state.mediaStream!);
-              call.on("stream", (str) => {
-                console.log("stream received");
-                if (this.remoteVideoRef.current) {
-                  this.remoteVideoRef.current.srcObject = str;
+            // if (!this.props.create) {
+            //   console.log("calling");
+            //   let call = this.state.peer.call(this.props.currentRoom, this.state.mediaStream!);
+            //   call.on("stream", str => {
+            //     console.log("stream received");
+            //     if (this.remoteVideoRef.current) {
+            //       this.remoteVideoRef.current.srcObject = str;
+            //     }
+            //   });
+            // }
+            if (!this.props.create) {
+              Object.keys(this.state.peer.connections).forEach(
+                (conn: string) => {
+                  console.log("calling: " + conn);
+                  let call = this.state.peer.call(
+                    conn,
+                    this.state.mediaStream!
+                  );
+                  call.on("stream", (str) => {
+                    console.log("stream received");
+                    if (this.remoteVideoRef.current) {
+                      this.remoteVideoRef.current.srcObject = str;
+                    }
+                  });
                 }
-              });
-            });
-          }
+              );
+            }
+          });
+        })
+        .catch((e) => {
+          console.log(e);
         });
-      });
     }
   };
 
@@ -249,14 +266,36 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
   };
 
   appendMessage = (data: any) => {
-    this.setState({
-      messages: [
-        ...this.state.messages,
-        <p className={data.sender === "You" ? "you" : "received"}>
-          {data.content}
-        </p>,
-      ],
-    });
+    if (this.chatRef.current) {
+      let newMessages = this.state.messages;
+      let date = new Date();
+      let lastMessage = this.state.messages[this.state.messages.length - 1];
+      let lastSender;
+      if (lastMessage) lastSender = lastMessage.sender;
+
+      if (lastMessage && lastSender === data.sender) {
+        let newMessage: Message = {
+          time: date.toLocaleTimeString(),
+          message: data.content,
+        };
+        newMessages[newMessages.length - 1].messages.push(newMessage);
+      } else {
+        let colourNum = `${crc32.str(data.sender).toString(16)}`;
+        colourNum = colourNum.padEnd(7, "0");
+        let newMessage: Message = {
+          time: date.toLocaleTimeString(),
+          message: `${data.content}`,
+        };
+        let newSection: MessageSection = {
+          sender: `${data.sender}`,
+          backGroundColour: `#${colourNum.slice(1, 7)}`,
+          messages: [newMessage],
+        };
+        newMessages.push(newSection);
+      }
+
+      this.setState({ messages: [...newMessages] });
+    }
   };
 
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -283,9 +322,6 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
   };
 
   render() {
-    console.log("rendering");
-    console.log(this.state.peer.id);
-    console.log(this.state.peer.connections);
     return (
       <div className="App">
         <header className="Chat-window">
@@ -301,9 +337,35 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
           <section className="main">
             <div className="peopleList" />
             <div className="chat-main">
-              <div className="chat">
-                {this.state.messages.map((m) => {
-                  return m;
+              <div className="chat" ref={this.chatRef}>
+                {this.state.messages.map((messageSection) => {
+                  console.log(this.state.messages);
+                  console.log(messageSection);
+                  return (
+                    <section
+                      className={
+                        messageSection.sender === "You" ? "you" : "received"
+                      }
+                    >
+                      <p
+                        className="title"
+                        style={{
+                          backgroundColor: messageSection.backGroundColour,
+                        }}
+                      >
+                        {messageSection.sender}
+                      </p>
+                      {messageSection.messages.map((message) => {
+                        return (
+                          <p>
+                            {messageSection.sender === "You"
+                              ? `${message.message} (${message.time})`
+                              : `(${message.time}) ${message.message}`}
+                          </p>
+                        );
+                      })}
+                    </section>
+                  );
                 })}
               </div>
               <div className="input">

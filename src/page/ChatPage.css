@@ -35,7 +35,7 @@
 }
 
 .main {
-  width: 25%;
+  text-align: center;
   flex-grow: 1;
   float: right;
   justify-content: end;
@@ -48,19 +48,16 @@
 }
 
 .chat section p {
-  text-align: right;
   font-size: 0.75em;
   margin-bottom: 0;
 }
 
 .chat section .title {
-  text-align: right;
   font-size: 0.5em;
   padding: 0.25em;
   margin-bottom: 0;
   margin-top: 0.25em;
   border-radius: 15px;
-  background-color: darkolivegreen;
 }
 
 .you {
@@ -73,6 +70,7 @@
 
 .input form {
   margin-top: 0.5em;
+  margin-bottom: 0.5em;
   display: flex;
   flex-flow: row wrap;
   justify-content: space-evenly;
