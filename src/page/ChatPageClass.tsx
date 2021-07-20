@@ -126,16 +126,10 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
                     (connection) => connection !== conn
                   ),
                 });
-                this.appendMessage(
-                  JSON.stringify({
-                    sender: "You",
-                    content: (
-                      <p>
-                        <em>[Client] Lost Connection to ${conn}</em>
-                      </p>
-                    ),
-                  })
-                );
+                this.appendMessage({
+                  sender: "Server",
+                  content: `Lost Connection to ${conn.peer}`,
+                });
                 break;
               }
               default: {
@@ -266,6 +260,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
   };
 
   appendMessage = (data: any) => {
+    console.log(data);
     if (this.chatRef.current) {
       let newMessages = this.state.messages;
       let date = new Date();
@@ -301,7 +296,11 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (this.state.message.trim()) {
-      this.appendMessage({ sender: "You", content: this.state.message });
+      this.appendMessage({
+        sender: "You",
+        type: "userMessage",
+        content: this.state.message,
+      });
       this.state.conns.forEach((connection) => {
         connection.send(
           JSON.stringify({
@@ -344,16 +343,21 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
                   return (
                     <section
                       className={
-                        messageSection.sender === "You" ? "you" : "received"
+                        messageSection.sender === "You"
+                          ? "you"
+                          : messageSection.sender === "Server"
+                          ? "server"
+                          : "received"
                       }
                     >
-                      <p
-                        className="title"
-                        style={{
-                          backgroundColor: messageSection.backGroundColour,
-                        }}
-                      >
-                        {messageSection.sender}
+                      <p className="title">
+                        <span
+                          style={{
+                            backgroundColor: messageSection.backGroundColour,
+                          }}
+                        >
+                          {messageSection.sender}
+                        </span>
                       </p>
                       {messageSection.messages.map((message) => {
                         return (

@@ -48,12 +48,19 @@
 }
 
 .chat section p {
-  font-size: 0.75em;
+  font-size: 0.5em;
   margin-bottom: 0;
 }
 
 .chat section .title {
   font-size: 0.5em;
+  padding: 0.25em;
+  margin-bottom: 0;
+  margin-top: 0.25em;
+  border-radius: 15px;
+}
+
+.chat section .title span {
   padding: 0.25em;
   margin-bottom: 0;
   margin-top: 0.25em;
@@ -66,6 +73,11 @@
 
 .received {
   text-align: left;
+}
+
+.server {
+  background-color: #282c34;
+  text-align: center;
 }
 
 .input form {
