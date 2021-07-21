@@ -77,6 +77,16 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
       this.defineConnectionBehaviour(conn);
     });
 
+    this.state.peer.on("close", () => {
+      alert("You are Offline, please return to the main menu.");
+      console.log("Peer closed");
+    });
+
+    this.state.peer.on("disconnected", () => {
+      alert("You are Offline, please return to the main menu.");
+      console.log("Peer disconnected");
+    });
+
     this.state.peer.on("open", () => {
       if (!this.props.create) {
         let conn = this.state.peer.connect(this.props.currentRoom);
@@ -92,6 +102,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
           this.remoteVideoRef.current.srcObject = stream;
         }
       });
+      call.on("close", () => {});
     });
 
     this.getMediaStream();
