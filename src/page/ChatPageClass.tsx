@@ -74,76 +74,13 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
 
   componentDidMount() {
     this.state.peer.on("connection", (conn) => {
-      this.setState({ conns: [...this.state.conns, conn] }, () => {
-        conn.on("data", (data) => {
-          console.log(data);
-          this.handleData(data);
-        });
-
-        conn.on("open", () => {
-          conn.send(
-            JSON.stringify({
-              sender: this.state.peer.id,
-              type: "connection",
-              content: "Connection Open",
-            })
-          );
-
-          conn.send(
-            JSON.stringify({
-              sender: this.state.peer.id,
-              type: "peerIDList",
-              content: this.state.conns.map((connection) => connection.peer),
-            })
-          );
-        });
-
-        conn.on("close", () => {
-          this.setState({
-            conns: this.state.conns.filter(
-              (connection) => connection.peer !== conn.peer
-            ),
-          });
-          console.log("Connection closed: " + conn.label);
-        });
-
-        conn.on("disconnected", () => {
-          console.log("Connection interrupted: " + conn.label);
-        });
-
-        conn.on("error", (e) => {
-          console.error(e);
-        });
-
-        conn.peerConnection.addEventListener(
-          "iceconnectionstatechange",
-          (ev) => {
-            console.log(conn.peerConnection.iceConnectionState);
-            switch (conn.peerConnection.iceConnectionState) {
-              case "disconnected": {
-                this.setState({
-                  conns: this.state.conns.filter(
-                    (connection) => connection !== conn
-                  ),
-                });
-                this.appendMessage({
-                  sender: "Server",
-                  content: `Lost Connection to ${conn.peer}`,
-                });
-                break;
-              }
-              default: {
-                break;
-              }
-            }
-          }
-        );
-      });
+      this.defineConnectionBehaviour(conn);
     });
 
     this.state.peer.on("open", () => {
       if (!this.props.create) {
-        this.connectToPeer(this.props.currentRoom);
+        let conn = this.state.peer.connect(this.props.currentRoom);
+        this.defineConnectionBehaviour(conn);
       }
     });
 
@@ -213,10 +150,9 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
     }
   };
 
-  connectToPeer = (peerID: string) => {
-    const conn = this.state.peer.connect(peerID);
-    conn.on("open", () => {
-      this.setState({ conns: [...this.state.conns, conn] }, () => {
+  defineConnectionBehaviour = (conn: Peer.DataConnection) => {
+    this.setState({ conns: [...this.state.conns, conn] }, () => {
+      conn.on("open", () => {
         conn.send(
           JSON.stringify({
             sender: this.state.peer.id,
@@ -224,11 +160,55 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
             content: "Connection Open",
           })
         );
-      });
 
-      conn.on("data", (data) => {
-        this.handleData(data);
+        conn.send(
+          JSON.stringify({
+            sender: this.state.peer.id,
+            type: "peerIDList",
+            content: this.state.conns.map((connection) => connection.peer),
+          })
+        );
       });
+    });
+
+    conn.on("data", (data) => {
+      this.handleData(data);
+    });
+
+    conn.on("close", () => {
+      this.setState({
+        conns: this.state.conns.filter(
+          (connection) => connection.peer !== conn.peer
+        ),
+      });
+      console.log("Connection closed: " + conn.label);
+    });
+
+    conn.on("disconnected", () => {
+      console.log("Connection interrupted: " + conn.label);
+    });
+
+    conn.on("error", (e) => {
+      console.error(e);
+    });
+
+    conn.peerConnection.addEventListener("iceconnectionstatechange", (ev) => {
+      console.log(conn.peerConnection.iceConnectionState);
+      switch (conn.peerConnection.iceConnectionState) {
+        case "disconnected": {
+          this.setState({
+            conns: this.state.conns.filter((connection) => connection !== conn),
+          });
+          this.appendMessage({
+            sender: "Server",
+            content: `Lost Connection to ${conn.peer}`,
+          });
+          break;
+        }
+        default: {
+          break;
+        }
+      }
     });
   };
 
@@ -250,7 +230,8 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
             peerID !== this.state.peer.id &&
             this.state.conns.map((conn) => conn.peer).indexOf(peerID) === -1
           ) {
-            this.connectToPeer(peerID);
+            let conn = this.state.peer.connect(peerID);
+            this.defineConnectionBehaviour(conn);
           }
         });
         break;
@@ -338,8 +319,6 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
             <div className="chat-main">
               <div className="chat" ref={this.chatRef}>
                 {this.state.messages.map((messageSection) => {
-                  console.log(this.state.messages);
-                  console.log(messageSection);
                   return (
                     <section
                       className={
