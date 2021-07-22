@@ -1,10 +1,10 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, RefObject, SetStateAction, useEffect } from "react";
 import { Button, Form } from "react-bootstrap";
 import Clock from "../components/ClockHook";
 import Peer, { DataConnection } from "peerjs";
 import crc32 from "crc-32";
+import Video from "../components/Video";
 import "./ChatPage.css";
-import { title } from "process";
 
 interface ChatProps {
   setCurrentPage: Dispatch<SetStateAction<string>>;
@@ -41,7 +41,6 @@ const constraints = {
 };
 
 const peerSettings = {
-  debug: 3,
   host: "/",
   path: "/peerjs",
   port: 3001,
@@ -49,7 +48,7 @@ const peerSettings = {
 
 export default class ChatPage extends React.Component<ChatProps, ChatState> {
   localVideoRef: React.RefObject<HTMLVideoElement>;
-  remoteVideoRef: React.RefObject<HTMLVideoElement>;
+  remoteVideoRef: React.RefObject<HTMLVideoElement>[];
   chatRef: React.RefObject<HTMLDivElement>;
   messageNotification: HTMLAudioElement;
 
@@ -67,7 +66,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
       remoteStreams: [],
     };
     this.localVideoRef = React.createRef();
-    this.remoteVideoRef = React.createRef();
+    this.remoteVideoRef = [];
     this.chatRef = React.createRef();
     this.messageNotification = new Audio("/message-notification.mp3");
   }
@@ -78,12 +77,10 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
     });
 
     this.state.peer.on("close", () => {
-      alert("You are Offline, please return to the main menu.");
       console.log("Peer closed");
     });
 
     this.state.peer.on("disconnected", () => {
-      alert("You are Offline, please return to the main menu.");
       console.log("Peer disconnected");
     });
 
@@ -98,9 +95,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
       call.answer(this.state.mediaStream || undefined);
       call.on("stream", (stream) => {
         console.log("stream received (in mount)");
-        if (this.remoteVideoRef.current) {
-          this.remoteVideoRef.current.srcObject = stream;
-        }
+        this.setState({ remoteStreams: [...this.state.remoteStreams, stream] });
       });
       call.on("close", () => {});
     });
@@ -126,16 +121,6 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
               this.localVideoRef.current.srcObject = this.state.mediaStream;
             }
 
-            // if (!this.props.create) {
-            //   console.log("calling");
-            //   let call = this.state.peer.call(this.props.currentRoom, this.state.mediaStream!);
-            //   call.on("stream", str => {
-            //     console.log("stream received");
-            //     if (this.remoteVideoRef.current) {
-            //       this.remoteVideoRef.current.srcObject = str;
-            //     }
-            //   });
-            // }
             if (!this.props.create) {
               Object.keys(this.state.peer.connections).forEach(
                 (conn: string) => {
@@ -146,8 +131,11 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
                   );
                   call.on("stream", (str) => {
                     console.log("stream received");
-                    if (this.remoteVideoRef.current) {
-                      this.remoteVideoRef.current.srcObject = str;
+                    this.remoteVideoRef.push(React.createRef());
+                    let ref =
+                      this.remoteVideoRef[this.remoteVideoRef.length - 1];
+                    if (ref.current) {
+                      ref.current.srcObject = str;
                     }
                   });
                 }
@@ -395,7 +383,15 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
               })}
             </div>
             <video className="vid" ref={this.localVideoRef} autoPlay muted />
-            <video className="vid" ref={this.remoteVideoRef} autoPlay />
+            {this.state.remoteStreams.map((stream) => {
+              return (
+                <Video
+                  srcObject={stream}
+                  className="vid"
+                  autoPlay={true}
+                ></Video>
+              );
+            })}
           </section>
         </header>
       </div>
