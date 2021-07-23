@@ -35,8 +35,8 @@ interface Message {
 const constraints = {
   audio: true,
   video: {
-    width: 1280,
-    height: 720,
+    width: 100,
+    height: 100,
   },
 };
 
@@ -95,9 +95,16 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
       call.answer(this.state.mediaStream || undefined);
       call.on("stream", (stream) => {
         console.log("stream received (in mount)");
-        this.setState({ remoteStreams: [...this.state.remoteStreams, stream] });
+        if (!this.state.remoteStreams.includes(stream)) {
+          this.setState({
+            remoteStreams: [...this.state.remoteStreams, stream],
+          });
+        }
+        console.log(this.state.remoteStreams);
       });
-      call.on("close", () => {});
+      call.on("close", () => {
+        console.log(call.metadata);
+      });
     });
 
     this.getMediaStream();
@@ -129,15 +136,16 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
                     conn,
                     this.state.mediaStream!
                   );
-                  call.on("stream", (str) => {
-                    console.log("stream received");
-                    this.remoteVideoRef.push(React.createRef());
-                    let ref =
-                      this.remoteVideoRef[this.remoteVideoRef.length - 1];
-                    if (ref.current) {
-                      ref.current.srcObject = str;
+                  call.on("stream", (stream) => {
+                    console.log("stream received (in mount)");
+                    if (!this.state.remoteStreams.includes(stream)) {
+                      this.setState({
+                        remoteStreams: [...this.state.remoteStreams, stream],
+                      });
                     }
+                    console.log(this.state.remoteStreams);
                   });
+                  call.on("close", () => {});
                 }
               );
             }
