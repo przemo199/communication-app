@@ -5,7 +5,7 @@ import http from "http";
 import { ExpressPeerServer } from "peer";
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 app.use(express.static(path.join(__dirname, "..", "build")));

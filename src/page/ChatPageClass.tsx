@@ -1,4 +1,4 @@
-import React, { Dispatch, RefObject, SetStateAction, useEffect } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { Button, Form } from "react-bootstrap";
 import Clock from "../components/ClockHook";
 import Peer, { DataConnection } from "peerjs";
@@ -43,7 +43,6 @@ const constraints = {
 const peerSettings = {
   host: "/",
   path: "/peerjs",
-  port: 3001,
 };
 
 export default class ChatPage extends React.Component<ChatProps, ChatState> {
