@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./AppHook";
-import reportWebVitals from "./reportWebVitals";
+import "./client/index.css";
+import App from "./client/AppHook";
+import reportWebVitals from "./client/reportWebVitals";
 
 ReactDOM.render(<App />, document.getElementById("root"));
 

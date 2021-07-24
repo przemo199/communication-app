@@ -1,4 +1,4 @@
-import { VideoHTMLAttributes, useEffect, useRef } from "react";
+import {useEffect, useRef, VideoHTMLAttributes} from "react";
 import crc32 from "crc-32";
 
 type PropsType = VideoHTMLAttributes<HTMLVideoElement> & {
@@ -6,7 +6,7 @@ type PropsType = VideoHTMLAttributes<HTMLVideoElement> & {
   peerID: string;
 };
 
-export default function Video({ srcObject, peerID, ...props }: PropsType) {
+export default function Video({srcObject, peerID, ...props}: PropsType) {
   const refVideo = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -25,21 +25,21 @@ export default function Video({ srcObject, peerID, ...props }: PropsType) {
     <div
       className="videoDiv"
       style={{
-        position: "relative",
+        position: "relative"
       }}
     >
       <video
         ref={refVideo}
         style={{
           borderStyle: "solid",
-          borderColor: `#${calculateColour(peerID)}`,
+          borderColor: `#${calculateColour(peerID)}`
         }}
         {...props}
-      ></video>
+      />
       <p
         style={{
           position: "absolute",
-          backgroundColor: `#${calculateColour(peerID)}`,
+          backgroundColor: `#${calculateColour(peerID)}`
         }}
         className="videoP"
       >

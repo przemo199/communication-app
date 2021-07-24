@@ -1,7 +1,7 @@
-import React, { Dispatch, SetStateAction } from "react";
-import { Button, Form } from "react-bootstrap";
+import React, {Dispatch, SetStateAction} from "react";
+import {Button, Form} from "react-bootstrap";
 import Clock from "../components/ClockHook";
-import Peer, { DataConnection } from "peerjs";
+import Peer, {DataConnection} from "peerjs";
 import crc32 from "crc-32";
 import Video from "../components/Video";
 import "./ChatPage.css";
@@ -35,15 +35,15 @@ interface Message {
 const constraints = {
   audio: true,
   video: {
-    width: 100,
-    height: 100,
-  },
+    width: 1920,
+    height: 1080
+  }
 };
 
 const peerSettings = {
   host: "/",
   path: "/peerjs",
-  port: 3001,
+  debug: 3
 };
 
 export default class ChatPage extends React.Component<ChatProps, ChatState> {
@@ -62,7 +62,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
       message: "",
       messages: [],
       mediaStream: null,
-      remoteStreams: [],
+      remoteStreams: []
     };
     this.localVideoRef = React.createRef();
     this.chatRef = React.createRef();
@@ -93,16 +93,12 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
       call.answer(this.state.mediaStream || undefined);
       call.on("stream", (stream) => {
         console.log("stream received (in mount)");
-        if (
-          !this.state.remoteStreams.some(
-            (peerStream) => peerStream.peerID === call.peer
-          )
-        ) {
+        if (!this.state.remoteStreams.some((peerStream) => peerStream.peerID === call.peer)) {
           this.setState({
             remoteStreams: [
               ...this.state.remoteStreams,
-              { peerID: call.peer, stream: stream },
-            ],
+              {peerID: call.peer, stream: stream}
+            ]
           });
         }
         console.log(this.state.remoteStreams);
@@ -126,58 +122,60 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
   getMediaStream = () => {
     if (!this.state.mediaStream) {
       navigator.mediaDevices
-        .getUserMedia(constraints)
-        .then((stream) => {
-          this.setState({ mediaStream: stream }, () => {
-            if (this.localVideoRef.current) {
-              this.localVideoRef.current.srcObject = this.state.mediaStream;
-            }
+      .getUserMedia(constraints)
+      .then((stream) => {
+        this.setState({mediaStream: stream}, () => {
+          if (this.localVideoRef.current) {
+            this.localVideoRef.current.srcObject = this.state.mediaStream;
+          }
 
-            if (!this.props.create) {
-              Object.keys(this.state.peer.connections).forEach(
-                (conn: string) => {
-                  console.log("calling: " + conn);
-                  let call = this.state.peer.call(
-                    conn,
-                    this.state.mediaStream!
-                  );
-                  call.on("stream", (stream) => {
-                    console.log("stream received (in mount)");
-                    if (
-                      !this.state.remoteStreams.some(
-                        (peerStream) => peerStream.peerID === call.peer
-                      )
-                    ) {
-                      this.setState({
-                        remoteStreams: [
-                          ...this.state.remoteStreams,
-                          { peerID: call.peer, stream: stream },
-                        ],
-                      });
-                    }
-                    console.log(this.state.remoteStreams);
-                    console.log({ peerID: call.peer, stream: stream });
-                  });
-                  call.on("close", () => {});
-                }
-              );
-            }
-          });
-        })
-        .catch((e) => {
-          console.log(e);
+          if (!this.props.create) {
+            Object.keys(this.state.peer.connections).forEach(
+              (conn: string) => {
+                console.log("calling: " + conn);
+                let call = this.state.peer.call(
+                  conn,
+                  this.state.mediaStream!
+                );
+                call.on("stream", (str) => {
+                  console.log("stream received (in mount)");
+                  if (
+                    !this.state.remoteStreams.some(
+                      (peerStream) => peerStream.peerID === call.peer
+                    )
+                  ) {
+                    this.setState({
+                      remoteStreams: [
+                        ...this.state.remoteStreams,
+                        {peerID: call.peer, stream: str}
+                      ]
+                    });
+                  }
+                  console.log(this.state.remoteStreams);
+                  console.log({peerID: call.peer, stream: str});
+                });
+                call.on("close", () => {
+                  console.log("stream closed: " + call.peer);
+                });
+              }
+            );
+          }
         });
+      })
+      .catch((e) => {
+        console.log(e);
+      });
     }
   };
 
   defineConnectionBehaviour = (conn: Peer.DataConnection) => {
-    this.setState({ conns: [...this.state.conns, conn] }, () => {
+    this.setState({conns: [...this.state.conns, conn]}, () => {
       conn.on("open", () => {
         conn.send(
           JSON.stringify({
             sender: this.state.peer.id,
             type: "connection",
-            content: "Connection Open",
+            content: "Connection Open"
           })
         );
 
@@ -185,7 +183,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
           JSON.stringify({
             sender: this.state.peer.id,
             type: "peerIDList",
-            content: this.state.conns.map((connection) => connection.peer),
+            content: this.state.conns.map((connection) => connection.peer)
           })
         );
       });
@@ -199,7 +197,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
       this.setState({
         conns: this.state.conns.filter(
           (connection) => connection.peer !== conn.peer
-        ),
+        )
       });
       console.log("Connection closed: " + conn.label);
     });
@@ -217,11 +215,11 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
       switch (conn.peerConnection.iceConnectionState) {
         case "disconnected": {
           this.setState({
-            conns: this.state.conns.filter((connection) => connection !== conn),
+            conns: this.state.conns.filter((connection) => connection !== conn)
           });
           this.appendMessage({
             sender: "Server",
-            content: `Lost Connection to ${conn.peer}`,
+            content: `Lost Connection to ${conn.peer}`
           });
           break;
         }
@@ -272,23 +270,23 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
       if (lastMessage && lastSender === data.sender) {
         let newMessage: Message = {
           time: date.toLocaleTimeString(),
-          message: data.content,
+          message: data.content
         };
         newMessages[newMessages.length - 1].messages.push(newMessage);
       } else {
         let newMessage: Message = {
           time: date.toLocaleTimeString(),
-          message: `${data.content}`,
+          message: `${data.content}`
         };
         let newSection: MessageSection = {
           sender: `${data.sender}`,
           backGroundColour: `#${this.calculateColour(data.sender)}`,
-          messages: [newMessage],
+          messages: [newMessage]
         };
         newMessages.push(newSection);
       }
 
-      this.setState({ messages: [...newMessages] });
+      this.setState({messages: [...newMessages]});
     }
   };
 
@@ -305,20 +303,20 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
       this.appendMessage({
         sender: "You",
         type: "userMessage",
-        content: this.state.message,
+        content: this.state.message
       });
       this.state.conns.forEach((connection) => {
         connection.send(
           JSON.stringify({
             sender: this.state.peer.id,
             type: "message",
-            content: this.state.message,
+            content: this.state.message
           })
         );
       });
     }
 
-    this.setState({ message: "" });
+    this.setState({message: ""});
   };
 
   goHome = () => {
@@ -337,10 +335,10 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
                 ? "Your ID: " + this.state.peer.id
                 : "Connecting..."}
             </h2>
-            <Clock />
+            <Clock/>
           </section>
           <section className="vidSection">
-            <video className="vid" ref={this.localVideoRef} autoPlay muted />
+            <video className="vid" ref={this.localVideoRef} autoPlay muted/>
             {this.state.remoteStreams.map((peerStream) => {
               return (
                 <Video
@@ -353,7 +351,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
             })}
           </section>
           <section className="main">
-            <div className="peopleList" />
+            <div className="peopleList"/>
             <div className="chat-main">
               <div className="chat" ref={this.chatRef}>
                 {this.state.messages.map((messageSection) => {
@@ -370,7 +368,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
                       <p className="title">
                         <span
                           style={{
-                            backgroundColor: messageSection.backGroundColour,
+                            backgroundColor: messageSection.backGroundColour
                           }}
                         >
                           {messageSection.sender}
@@ -396,7 +394,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
                     placeholder="Enter Message Here"
                     value={this.state.message}
                     onChange={(e) => {
-                      this.setState({ message: e.target.value });
+                      this.setState({message: e.target.value});
                     }}
                   />
                   <Button variant="primary" type="submit">
@@ -413,7 +411,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
                 return (
                   <p
                     className="user"
-                    style={{ backgroundColor: colour }}
+                    style={{backgroundColor: colour}}
                     key={conn.peer}
                   >
                     {conn.peer}
