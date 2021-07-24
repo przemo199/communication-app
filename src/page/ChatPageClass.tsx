@@ -18,7 +18,7 @@ interface ChatState {
   message: string;
   messages: MessageSection[];
   mediaStream: MediaStream | null;
-  remoteStreams: MediaStream[];
+  remoteStreams: { peerID: string; stream: MediaStream }[];
 }
 
 interface MessageSection {
@@ -43,11 +43,11 @@ const constraints = {
 const peerSettings = {
   host: "/",
   path: "/peerjs",
+  port: 3001,
 };
 
 export default class ChatPage extends React.Component<ChatProps, ChatState> {
   localVideoRef: React.RefObject<HTMLVideoElement>;
-  remoteVideoRef: React.RefObject<HTMLVideoElement>[];
   chatRef: React.RefObject<HTMLDivElement>;
   messageNotification: HTMLAudioElement;
 
@@ -65,7 +65,6 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
       remoteStreams: [],
     };
     this.localVideoRef = React.createRef();
-    this.remoteVideoRef = [];
     this.chatRef = React.createRef();
     this.messageNotification = new Audio("/message-notification.mp3");
   }
@@ -94,9 +93,16 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
       call.answer(this.state.mediaStream || undefined);
       call.on("stream", (stream) => {
         console.log("stream received (in mount)");
-        if (!this.state.remoteStreams.includes(stream)) {
+        if (
+          !this.state.remoteStreams.some(
+            (peerStream) => peerStream.peerID === call.peer
+          )
+        ) {
           this.setState({
-            remoteStreams: [...this.state.remoteStreams, stream],
+            remoteStreams: [
+              ...this.state.remoteStreams,
+              { peerID: call.peer, stream: stream },
+            ],
           });
         }
         console.log(this.state.remoteStreams);
@@ -137,12 +143,20 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
                   );
                   call.on("stream", (stream) => {
                     console.log("stream received (in mount)");
-                    if (!this.state.remoteStreams.includes(stream)) {
+                    if (
+                      !this.state.remoteStreams.some(
+                        (peerStream) => peerStream.peerID === call.peer
+                      )
+                    ) {
                       this.setState({
-                        remoteStreams: [...this.state.remoteStreams, stream],
+                        remoteStreams: [
+                          ...this.state.remoteStreams,
+                          { peerID: call.peer, stream: stream },
+                        ],
                       });
                     }
                     console.log(this.state.remoteStreams);
+                    console.log({ peerID: call.peer, stream: stream });
                   });
                   call.on("close", () => {});
                 }
@@ -262,15 +276,13 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
         };
         newMessages[newMessages.length - 1].messages.push(newMessage);
       } else {
-        let colourNum = `${crc32.str(data.sender).toString(16)}`;
-        colourNum = colourNum.padEnd(7, "0");
         let newMessage: Message = {
           time: date.toLocaleTimeString(),
           message: `${data.content}`,
         };
         let newSection: MessageSection = {
           sender: `${data.sender}`,
-          backGroundColour: `#${colourNum.slice(1, 7)}`,
+          backGroundColour: `#${this.calculateColour(data.sender)}`,
           messages: [newMessage],
         };
         newMessages.push(newSection);
@@ -278,6 +290,13 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
 
       this.setState({ messages: [...newMessages] });
     }
+  };
+
+  calculateColour = (userID: string) => {
+    let colourNum = `${crc32.str(userID).toString(16)}`;
+    colourNum = colourNum.padEnd(7, "0");
+    colourNum = colourNum.slice(1, 7);
+    return colourNum;
   };
 
   handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -319,6 +338,19 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
                 : "Connecting..."}
             </h2>
             <Clock />
+          </section>
+          <section className="vidSection">
+            <video className="vid" ref={this.localVideoRef} autoPlay muted />
+            {this.state.remoteStreams.map((peerStream) => {
+              return (
+                <Video
+                  srcObject={peerStream.stream}
+                  peerID={peerStream.peerID}
+                  className="vid"
+                  autoPlay={true}
+                ></Video>
+              );
+            })}
           </section>
           <section className="main">
             <div className="peopleList" />
@@ -389,16 +421,6 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
                 );
               })}
             </div>
-            <video className="vid" ref={this.localVideoRef} autoPlay muted />
-            {this.state.remoteStreams.map((stream) => {
-              return (
-                <Video
-                  srcObject={stream}
-                  className="vid"
-                  autoPlay={true}
-                ></Video>
-              );
-            })}
           </section>
         </header>
       </div>
