@@ -24,9 +24,7 @@ export default function Video({srcObject, peerID, ...props}: PropsType) {
   return (
     <div
       className="videoDiv"
-      style={{
-        position: "relative"
-      }}
+      style={{position: "relative"}}
     >
       <video
         ref={refVideo}

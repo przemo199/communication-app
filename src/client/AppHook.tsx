@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import MainPage from "./page/MainPage";
 import ErrorPage from "./page/ErrorPage";
 import ChatPage from "./page/ChatPageClass";
+import MediaDeviceSelector from './components/MediaDeviceSelector';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState<string>("mainPage");
@@ -13,11 +14,14 @@ const App = () => {
   switch (currentPage) {
     case "mainPage":
       return (
-        <MainPage
-          setCurrentPage={setCurrentPage}
-          setCurrentRoom={setCurrentRoom}
-          setCreate={setCreate}
-        />
+        <>
+          <MediaDeviceSelector/>
+          <MainPage
+            setCurrentPage={setCurrentPage}
+            setCurrentRoom={setCurrentRoom}
+            setCreate={setCreate}
+          />
+        </>
       );
     case "chatPage":
       return (
@@ -28,7 +32,7 @@ const App = () => {
         />
       );
     default:
-      return <ErrorPage setCurrentPage={setCurrentPage} />;
+      return <ErrorPage setCurrentPage={setCurrentPage}/>;
   }
 };
 
