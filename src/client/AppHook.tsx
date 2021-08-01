@@ -4,7 +4,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import MainPage from "./page/MainPage";
 import ErrorPage from "./page/ErrorPage";
 import ChatPage from "./page/ChatPageClass";
-import MediaDeviceSelector from './components/MediaDeviceSelector';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState<string>("mainPage");
@@ -15,7 +14,6 @@ const App = () => {
     case "mainPage":
       return (
         <>
-          <MediaDeviceSelector/>
           <MainPage
             setCurrentPage={setCurrentPage}
             setCurrentRoom={setCurrentRoom}

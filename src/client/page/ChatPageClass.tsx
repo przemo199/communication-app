@@ -5,6 +5,7 @@ import Peer, {DataConnection} from "peerjs";
 import crc32 from "crc-32";
 import Video from "../components/Video";
 import "./ChatPage.css";
+import MediaDeviceSelector from '../components/MediaDeviceSelector';
 
 interface ChatProps {
   setCurrentPage: Dispatch<SetStateAction<string>>;
@@ -322,8 +323,13 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
             </h2>
             <Clock/>
           </section>
-          <section className="vidSection">
-            <video className="vid" ref={this.localVideoRef} autoPlay muted/>
+          <section className="vid-section">
+            <div>
+              <video className="vid-local" ref={this.localVideoRef} autoPlay muted/>
+              <div style={{position: "absolute"}}>
+                <MediaDeviceSelector />
+              </div>
+            </div>
             {this.state.remoteStreams.map((peerStream) => {
               return (
                 <Video
@@ -336,7 +342,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
             })}
           </section>
           <section className="main">
-            <div className="peopleList"/>
+            <div className="people-list"/>
             <div className="chat-main">
               <div className="chat" ref={this.chatRef}>
                 {this.state.messages.map((messageSection) => {

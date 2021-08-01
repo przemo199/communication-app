@@ -2,7 +2,6 @@ import React, { Dispatch, SetStateAction, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import Clock from "../components/ClockHook";
 import MainComponent from "../components/MainComponent";
-import MediaDeviceSelector from '../components/MediaDeviceSelector';
 
 const MainPage = ({
   setCurrentPage,

@@ -38,8 +38,7 @@
   height: 100%;
 }
 
-.vidSection {
-  float: left;
+.vid-section {
   flex-grow: 1;
 }
 
@@ -106,13 +105,6 @@
   text-align: center;
 }
 
-.videoDiv {
-  width: 400px;
-  height: 400px;
-  margin: 0;
-  padding: 0;
-}
-
 .videoP {
   overflow: hidden;
   display: none;
@@ -130,4 +122,16 @@
 .vid {
   width: 400px;
   height: 400px;
+}
+
+.vid-local {
+  width: 480px;
+  height: 300px;
+  float: left;
+  margin-left: 10vh;
+}
+
+.text-outline {
+  color: #fff;
+  text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
 }

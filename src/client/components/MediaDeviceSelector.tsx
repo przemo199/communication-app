@@ -11,8 +11,9 @@ const MediaDeviceSelector = () => {
       window.alert("Failed to access media devices");
     } else {
       const populateOptions = async () => {
-        await navigator.mediaDevices.getUserMedia({audio: true, video: true});
+        const stream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
         setMediaDevices(await navigator.mediaDevices.enumerateDevices());
+        stream.getTracks().forEach(track => stream.removeTrack(track));
       };
       populateOptions();
     }
@@ -28,7 +29,9 @@ const MediaDeviceSelector = () => {
     }
 
     return (
-      <select className="form-select-sm" ref={kind === "videoinput" ? videoSelectRef : audioSelectRef} defaultValue={getFirstMatchingId()}>
+      <select className="form-select-sm"
+              ref={kind === "videoinput" ? videoSelectRef : audioSelectRef}
+              defaultValue={getFirstMatchingId()}>
         {mediaDevices.map((device: MediaDeviceInfo) => {
           if (device.kind === kind) {
             return (
@@ -56,9 +59,13 @@ const MediaDeviceSelector = () => {
   }
 
   return (
-    <Form style={{maxWidth: "35%"}}>
+    <Form style={{maxWidth: "35%", margin: "25px 0 0 calc(10vh + 30px)"}}>
+      <p className="text-outline">Camera:</p>
       {createSelectElement("videoinput")}
-      {createSelectElement("audioinput")}
+      <div>
+        <p className="text-outline">Microphone:</p>
+        {createSelectElement("audioinput")}
+      </div>
       <Button onClick={handleSelection}>Accept</Button>
     </Form>
   );
