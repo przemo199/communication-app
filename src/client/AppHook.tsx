@@ -5,7 +5,7 @@ import MainPage from "./page/MainPage";
 import ErrorPage from "./page/ErrorPage";
 import ChatPage from "./page/ChatPageClass";
 
-const App = () => {
+const App = (): JSX.Element => {
   const [currentPage, setCurrentPage] = useState<string>("mainPage");
   const [currentRoom, setCurrentRoom] = useState<string>("");
   const [create, setCreate] = useState(false);

@@ -1,4 +1,4 @@
-import {useEffect, useRef, VideoHTMLAttributes} from "react";
+import React, {useEffect, useRef, VideoHTMLAttributes} from "react";
 import crc32 from "crc-32";
 
 type PropsType = VideoHTMLAttributes<HTMLVideoElement> & {
@@ -6,7 +6,7 @@ type PropsType = VideoHTMLAttributes<HTMLVideoElement> & {
   peerID: string;
 };
 
-export default function Video({srcObject, peerID, ...props}: PropsType) {
+export default function Video({srcObject, peerID, ...props}: PropsType): JSX.Element {
   const refVideo = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {

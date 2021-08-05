@@ -5,7 +5,7 @@ import Peer, {DataConnection} from "peerjs";
 import crc32 from "crc-32";
 import Video from "../components/Video";
 import "./ChatPage.css";
-import MediaDeviceSelector from '../components/MediaDeviceSelector';
+import MediaDeviceSelector from "../components/MediaDeviceSelector";
 
 interface ChatProps {
   setCurrentPage: Dispatch<SetStateAction<string>>;
@@ -67,7 +67,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
     this.messageNotification = new Audio("/message-notification.mp3");
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     this.state.peer.on("connection", (conn) => {
       this.defineConnectionBehaviour(conn);
     });
@@ -82,7 +82,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
 
     this.state.peer.on("open", () => {
       if (!this.props.create) {
-        let conn = this.state.peer.connect(this.props.currentRoom);
+        const conn = this.state.peer.connect(this.props.currentRoom);
         this.defineConnectionBehaviour(conn);
       }
     });
@@ -109,12 +109,12 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
     this.getMediaStream();
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     this.state.conns.forEach(conn => conn.close());
     this.state.peer.destroy();
   }
 
-  getMediaStream = () => {
+  getMediaStream = (): void => {
     if (!this.state.mediaStream) {
       navigator.mediaDevices.getUserMedia(constraints)
       .then((stream) => {
@@ -126,7 +126,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
           if (!this.props.create) {
             this.state.conns.forEach((conn) => {
                 console.log("calling: " + conn);
-                let call = this.state.peer.call(
+                const call = this.state.peer.call(
                   conn.peer,
                   this.state.mediaStream!
                 );
@@ -154,7 +154,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
     }
   };
 
-  defineConnectionBehaviour = (conn: Peer.DataConnection) => {
+  defineConnectionBehaviour = (conn: Peer.DataConnection): void => {
     this.setState({conns: [...this.state.conns, conn]}, () => {
       conn.on("open", () => {
         conn.send(
@@ -196,75 +196,75 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
       console.error(e);
     });
 
-    conn.peerConnection.addEventListener("iceconnectionstatechange", (ev) => {
+    conn.peerConnection.addEventListener("iceconnectionstatechange", () => {
       console.log(conn.peerConnection.iceConnectionState);
       switch (conn.peerConnection.iceConnectionState) {
-        case "disconnected": {
-          this.setState({
-            conns: this.state.conns.filter((connection) => connection !== conn)
-          });
-          this.appendMessage({
-            sender: "Server",
-            content: `Lost Connection to ${conn.peer}`
-          });
-          break;
-        }
-        default: {
-          break;
-        }
+      case "disconnected": {
+        this.setState({
+          conns: this.state.conns.filter((connection) => connection !== conn)
+        });
+        this.appendMessage({
+          sender: "Server",
+          content: `Lost Connection to ${conn.peer}`
+        });
+        break;
+      }
+      default: {
+        break;
+      }
       }
     });
   };
 
-  handleData = (data: any) => {
-    let message = JSON.parse(data);
+  handleData = (data: string) => {
+    const message = JSON.parse(data);
     switch (message.type) {
-      case "message":
-        this.appendMessage(message);
-        if (!document.hasFocus()) {
-          this.messageNotification.play();
+    case "message":
+      this.appendMessage(message);
+      if (!document.hasFocus()) {
+        this.messageNotification.play();
+      }
+      break;
+    case "connection":
+      console.log(`[Connection] ${message.content}`);
+      break;
+    case "peerIDList":
+      message.content.forEach((peerID: string) => {
+        if (
+          peerID !== this.state.peer.id &&
+          this.state.conns.map((conn) => conn.peer).indexOf(peerID) === -1
+        ) {
+          const conn = this.state.peer.connect(peerID);
+          this.defineConnectionBehaviour(conn);
         }
-        break;
-      case "connection":
-        console.log(`[Connection] ${message.content}`);
-        break;
-      case "peerIDList":
-        message.content.forEach((peerID: string) => {
-          if (
-            peerID !== this.state.peer.id &&
-            this.state.conns.map((conn) => conn.peer).indexOf(peerID) === -1
-          ) {
-            let conn = this.state.peer.connect(peerID);
-            this.defineConnectionBehaviour(conn);
-          }
-        });
-        break;
-      default:
-        console.log("Incorrect data type");
+      });
+      break;
+    default:
+      console.log("Incorrect data type");
     }
   };
 
   appendMessage = (data: any) => {
     console.log(data);
     if (this.chatRef.current) {
-      let newMessages = this.state.messages;
-      let date = new Date();
-      let lastMessage = this.state.messages[this.state.messages.length - 1];
+      const newMessages = this.state.messages;
+      const date = new Date();
+      const lastMessage = this.state.messages[this.state.messages.length - 1];
       let lastSender;
       if (lastMessage) lastSender = lastMessage.sender;
 
       if (lastMessage && lastSender === data.sender) {
-        let newMessage: Message = {
+        const newMessage: Message = {
           time: date.toLocaleTimeString(),
           message: data.content
         };
         newMessages[newMessages.length - 1].messages.push(newMessage);
       } else {
-        let newMessage: Message = {
+        const newMessage: Message = {
           time: date.toLocaleTimeString(),
           message: `${data.content}`
         };
-        let newSection: MessageSection = {
+        const newSection: MessageSection = {
           sender: `${data.sender}`,
           backGroundColour: `#${this.calculateColour(data.sender)}`,
           messages: [newMessage]
@@ -327,12 +327,13 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
             <div>
               <video className="vid-local" ref={this.localVideoRef} autoPlay muted/>
               <div style={{position: "absolute"}}>
-                <MediaDeviceSelector />
+                <MediaDeviceSelector/>
               </div>
             </div>
             {this.state.remoteStreams.map((peerStream) => {
               return (
                 <Video
+                  key={peerStream.peerID}
                   srcObject={peerStream.stream}
                   peerID={peerStream.peerID}
                   className="vid"
@@ -352,8 +353,8 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
                         messageSection.sender === "You"
                           ? "you"
                           : messageSection.sender === "Server"
-                          ? "server"
-                          : "received"
+                            ? "server"
+                            : "received"
                       }
                     >
                       <p className="title">
@@ -367,7 +368,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
                       </p>
                       {messageSection.messages.map((message) => {
                         return (
-                          <p>
+                          <p key={message.time}>
                             {messageSection.sender === "You"
                               ? `${message.message} (${message.time})`
                               : `(${message.time}) ${message.message}`}
@@ -398,7 +399,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
               {this.state.conns.map((conn) => {
                 let colourNum = `${crc32.str(conn.peer).toString(16)}`;
                 colourNum = colourNum.padEnd(7, "0");
-                let colour = `#${colourNum.slice(1, 7)}`;
+                const colour = `#${colourNum.slice(1, 7)}`;
                 return (
                   <p
                     className="user"

@@ -20,11 +20,11 @@ class App extends React.Component<any, AppState> {
     };
   }
 
-  setView = (view: string) => {
+  setView = (view: string): void => {
     this.setState({view: view});
   };
 
-  render() {
+  render(): JSX.Element {
     return (
       <div className="App">
         <header className="App-header">
@@ -41,11 +41,11 @@ class App extends React.Component<any, AppState> {
 }
 
 function Buttons(props: any) {
-  let createButtonClicked = () => {
+  const createButtonClicked = () => {
     props.setView("create");
   };
 
-  let joinButtonClicked = () => {
+  const joinButtonClicked = () => {
     props.setView("join");
   };
 
@@ -76,7 +76,7 @@ function Create(props: any) {
     props.setView("chat");
   }
 
-  let returnButtonClicked = () => {
+  const returnButtonClicked = () => {
     props.setView("buttons");
   };
 
@@ -107,7 +107,7 @@ function Join(props: any) {
     props.setView("chat");
   }
 
-  let returnButtonClicked = () => {
+  const returnButtonClicked = () => {
     props.setView("buttons");
   };
 

@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Button, Form} from "react-bootstrap";
 
-const MediaDeviceSelector = () => {
+const MediaDeviceSelector = (): JSX.Element => {
   const [mediaDevices, setMediaDevices] = useState<MediaDeviceInfo[]>([]);
   const videoSelectRef = useRef<HTMLSelectElement>(null);
   const audioSelectRef = useRef<HTMLSelectElement>(null);
@@ -21,12 +21,12 @@ const MediaDeviceSelector = () => {
 
   const createSelectElement = (kind: string) => {
     const getFirstMatchingId = () => {
-      for (let device of mediaDevices) {
+      for (const device of mediaDevices) {
         if (device.kind === kind) {
           return device.deviceId;
         }
       }
-    }
+    };
 
     return (
       <select className="form-select-sm"
@@ -38,14 +38,14 @@ const MediaDeviceSelector = () => {
               <option value={device.deviceId} key={device.deviceId}>
                 {device.label}
               </option>
-            )
+            );
           } else {
             return null;
           }
         })}
       </select>
-    )
-  }
+    );
+  };
 
   const handleSelection = (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +56,7 @@ const MediaDeviceSelector = () => {
       console.log(audioSelectRef.current.value);
     }
     // TODO: pass selected ids to the parent element here
-  }
+  };
 
   return (
     <Form style={{maxWidth: "35%", margin: "25px 0 0 calc(10vh + 30px)"}}>

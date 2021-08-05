@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react";
 
-const Clock = () => {
+const Clock = (): JSX.Element => {
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
-    let timer = setInterval(() => {
+    const timer = setInterval(() => {
       setTime(new Date());
     }, 1000);
     return () => {

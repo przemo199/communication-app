@@ -11,7 +11,7 @@ const MainPage = ({
   setCurrentPage: Dispatch<SetStateAction<string>>;
   setCurrentRoom: Dispatch<SetStateAction<string>>;
   setCreate: Dispatch<SetStateAction<boolean>>;
-}) => {
+}): JSX.Element => {
   const [pageState, setPageState] = useState("main");
   const [roomNumber, setRoomNumber] = useState("");
 
@@ -50,7 +50,7 @@ const MainPage = ({
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("THE BUTTON WAS PRESSED");
-    let validRoomNumber = checkRoomNumber(roomNumber);
+    const validRoomNumber = checkRoomNumber(roomNumber);
     if (pageState === "createChatRoom" && validRoomNumber) {
       setCreate(true);
       setCurrentRoom(roomNumber);
