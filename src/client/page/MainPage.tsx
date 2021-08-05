@@ -1,12 +1,12 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import React, {Dispatch, SetStateAction, useState} from "react";
+import {Button, Form} from "react-bootstrap";
 import Clock from "../components/ClockHook";
 import MainComponent from "../components/MainComponent";
 
 const MainPage = ({
   setCurrentPage,
   setCurrentRoom,
-  setCreate,
+  setCreate
 }: {
   setCurrentPage: Dispatch<SetStateAction<string>>;
   setCurrentRoom: Dispatch<SetStateAction<string>>;
@@ -95,7 +95,7 @@ const MainPage = ({
   return (
     <div className="App">
       <header className="App-header">
-        <Clock />
+        <Clock/>
         {MainComponent()}
         {pageState === "main" && mainNavButtons()}
         {pageState === "createChatRoom" && createJoinChatRoom()}

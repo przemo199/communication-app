@@ -125,26 +125,25 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
 
           if (!this.props.create) {
             this.state.conns.forEach((conn) => {
-                console.log("calling: " + conn);
-                const call = this.state.peer.call(
-                  conn.peer,
-                  this.state.mediaStream!
-                );
-                call.on("stream", (str) => {
-                  console.log("stream received (in mount)");
-                  if (!this.state.remoteStreams.some((peerStream) => peerStream.peerID === call.peer)) {
-                    this.setState({
-                      remoteStreams: [...this.state.remoteStreams, {peerID: call.peer, stream: str}]
-                    });
-                  }
-                  console.log(this.state.remoteStreams);
-                  console.log({peerID: call.peer, stream: str});
-                });
-                call.on("close", () => {
-                  console.log("stream closed: " + call.peer);
-                });
-              }
-            );
+              console.log("calling: " + conn);
+              const call = this.state.peer.call(
+                conn.peer,
+                this.state.mediaStream!
+              );
+              call.on("stream", (str) => {
+                console.log("stream received (in mount)");
+                if (!this.state.remoteStreams.some((peerStream) => peerStream.peerID === call.peer)) {
+                  this.setState({
+                    remoteStreams: [...this.state.remoteStreams, {peerID: call.peer, stream: str}]
+                  });
+                }
+                console.log(this.state.remoteStreams);
+                console.log({peerID: call.peer, stream: str});
+              });
+              call.on("close", () => {
+                console.log("stream closed: " + call.peer);
+              });
+            });
           }
         });
       })
@@ -199,19 +198,19 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
     conn.peerConnection.addEventListener("iceconnectionstatechange", () => {
       console.log(conn.peerConnection.iceConnectionState);
       switch (conn.peerConnection.iceConnectionState) {
-      case "disconnected": {
-        this.setState({
-          conns: this.state.conns.filter((connection) => connection !== conn)
-        });
-        this.appendMessage({
-          sender: "Server",
-          content: `Lost Connection to ${conn.peer}`
-        });
-        break;
-      }
-      default: {
-        break;
-      }
+        case "disconnected": {
+          this.setState({
+            conns: this.state.conns.filter((connection) => connection !== conn)
+          });
+          this.appendMessage({
+            sender: "Server",
+            content: `Lost Connection to ${conn.peer}`
+          });
+          break;
+        }
+        default: {
+          break;
+        }
       }
     });
   };
@@ -219,28 +218,28 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
   handleData = (data: string) => {
     const message = JSON.parse(data);
     switch (message.type) {
-    case "message":
-      this.appendMessage(message);
-      if (!document.hasFocus()) {
-        this.messageNotification.play();
-      }
-      break;
-    case "connection":
-      console.log(`[Connection] ${message.content}`);
-      break;
-    case "peerIDList":
-      message.content.forEach((peerID: string) => {
-        if (
-          peerID !== this.state.peer.id &&
-          this.state.conns.map((conn) => conn.peer).indexOf(peerID) === -1
-        ) {
-          const conn = this.state.peer.connect(peerID);
-          this.defineConnectionBehaviour(conn);
+      case "message":
+        this.appendMessage(message);
+        if (!document.hasFocus()) {
+          this.messageNotification.play();
         }
-      });
-      break;
-    default:
-      console.log("Incorrect data type");
+        break;
+      case "connection":
+        console.log(`[Connection] ${message.content}`);
+        break;
+      case "peerIDList":
+        message.content.forEach((peerID: string) => {
+          if (
+            peerID !== this.state.peer.id &&
+            this.state.conns.map((conn) => conn.peer).indexOf(peerID) === -1
+          ) {
+            const conn = this.state.peer.connect(peerID);
+            this.defineConnectionBehaviour(conn);
+          }
+        });
+        break;
+      default:
+        console.log("Incorrect data type");
     }
   };
 
@@ -317,9 +316,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
           <section className="top-bar">
             <Button onClick={() => this.goHome()}>Home</Button>
             <h2 className="YourID">
-              {this.state.peer.id
-                ? "Your ID: " + this.state.peer.id
-                : "Connecting..."}
+              {this.state.peer.id ? "Your ID: " + this.state.peer.id : "Connecting..."}
             </h2>
             <Clock/>
           </section>
@@ -338,7 +335,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
                   peerID={peerStream.peerID}
                   className="vid"
                   autoPlay={true}
-                ></Video>
+                />
               );
             })}
           </section>
@@ -350,11 +347,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
                   return (
                     <section
                       className={
-                        messageSection.sender === "You"
-                          ? "you"
-                          : messageSection.sender === "Server"
-                            ? "server"
-                            : "received"
+                        messageSection.sender === "You" ? "you" : messageSection.sender === "Server" ? "server": "received"
                       }
                     >
                       <p className="title">
@@ -369,9 +362,7 @@ export default class ChatPage extends React.Component<ChatProps, ChatState> {
                       {messageSection.messages.map((message) => {
                         return (
                           <p key={message.time}>
-                            {messageSection.sender === "You"
-                              ? `${message.message} (${message.time})`
-                              : `(${message.time}) ${message.message}`}
+                            {messageSection.sender === "You" ? `${message.message} (${message.time})` : `(${message.time}) ${message.message}`}
                           </p>
                         );
                       })}

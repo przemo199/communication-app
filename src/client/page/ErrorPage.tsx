@@ -1,12 +1,12 @@
-import React, { Dispatch, SetStateAction } from "react";
-import { Button } from "react-bootstrap";
+import React, {Dispatch, SetStateAction} from "react";
+import {Button} from "react-bootstrap";
 
 const ErrorPage = ({
-  setCurrentPage,
+  setCurrentPage
 }: {
   setCurrentPage: Dispatch<SetStateAction<string>>;
 }) => {
-  let goToMainPage = () => {
+  const goToMainPage = () => {
     setCurrentPage("mainPage");
   };
 

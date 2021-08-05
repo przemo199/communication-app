@@ -11,7 +11,7 @@ const constraints = {
     width: 1920,
     height: 1080
   }
-}
+};
 
 const ChatPage = ({
   setCurrentPage,
@@ -28,14 +28,14 @@ const ChatPage = ({
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const [connList, setConnList] = useState<Peer.DataConnection[]>([]);
   const [peerIDList, setPeerIDList] = useState<string[]>([]);
-  let [peer, setPeer] = useState<Peer>(new Peer({debug: 3}));
+  const [peer, setPeer] = useState<Peer>(new Peer({debug: 3}));
   const [yourID, setYourID] = useState("");
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
   const [incomingMediaStream, setIncomingMediaStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
     peer.disconnect();
-    let tempPeer = new Peer(create ? currentRoom : undefined, {debug: 3});
+    const tempPeer = new Peer(create ? currentRoom : undefined, {debug: 3});
     setPeer(tempPeer);
 
     peer.on("open", (id) => {
@@ -88,19 +88,19 @@ const ChatPage = ({
       console.log(mediaStream ? mediaStream.id : undefined);
       call.answer(mediaStream ? mediaStream : undefined);
       call.on("stream", (stream: MediaStream) => {
-        console.log("stream event")
+        console.log("stream event");
         if (remoteVideoRef.current) {
-          console.log("stream set")
+          console.log("stream set");
           remoteVideoRef.current.srcObject = stream;
         } else {
-          console.log("no video element")
+          console.log("no video element");
         }
       });
     });
 
     return () => {
       peer.destroy();
-    }
+    };
   }, []);
 
   useEffect(() => {
@@ -110,26 +110,26 @@ const ChatPage = ({
           const stream = await navigator.mediaDevices.getUserMedia(constraints);
           setMediaStream(stream);
         } catch (e) {
-          console.error(e)
+          console.error(e);
         }
-        console.log("done")
+        console.log("done");
       })();
     }
 
     if (mediaStream && localVideoRef.current) {
       localVideoRef.current.srcObject = mediaStream;
       if (!create) {
-        console.log("mediaPrint")
+        console.log("mediaPrint");
         console.log(mediaStream);
         const call = peer.call(currentRoom, mediaStream);
-        console.log("calling")
+        console.log("calling");
         call.on("stream", (stream) => {
-          console.log("stream event")
+          console.log("stream event");
           if (remoteVideoRef.current) {
-            console.log("stream set")
+            console.log("stream set");
             remoteVideoRef.current.srcObject = stream;
           } else {
-            console.log("no video element")
+            console.log("no video element");
           }
         });
       }
@@ -164,7 +164,7 @@ const ChatPage = ({
   };
 
   const handleData = (data: any) => {
-    let message = JSON.parse(data);
+    const message = JSON.parse(data);
     switch (message.type) {
       case "message":
         appendMessage(message);
@@ -183,26 +183,22 @@ const ChatPage = ({
 
   const appendMessage = (data: any) => {
     if (chatRef.current) {
-      let textNode = document.createElement("p");
-      let date = new Date();
+      const textNode = document.createElement("p");
+      const date = new Date();
       textNode.textContent =
-        data.sender === "You"
-          ? data.content + " (" + date.toLocaleTimeString() + ") "
-          : " (" + date.toLocaleTimeString() + ") " + data.content;
-      let lastMessage =
+        data.sender === "You" ? data.content + " (" + date.toLocaleTimeString() + ") " : " (" + date.toLocaleTimeString() + ") " + data.content;
+      const lastMessage =
         chatRef.current.children[chatRef.current.children.length - 1];
       let lastTitle;
       if (lastMessage) {
         lastTitle = lastMessage.children[0];
       }
       if (lastTitle && lastTitle.getAttribute("sender") === data.sender) {
-        chatRef.current.children[
-        chatRef.current.children.length - 1
-          ].appendChild(textNode);
+        chatRef.current.children[chatRef.current.children.length - 1].appendChild(textNode);
       } else {
-        let divNode = document.createElement("section");
+        const divNode = document.createElement("section");
         divNode.classList.add(data.sender === "You" ? "you" : "foreign");
-        let title = document.createElement("p");
+        const title = document.createElement("p");
         title.setAttribute("sender", data.sender);
         title.classList.add("title");
         title.textContent = data.sender;
@@ -245,7 +241,7 @@ const ChatPage = ({
       <header className="Chat-window">
         <section className="top-bar">
           <Button onClick={() => goHome()}>Home</Button>
-          <h2 className="YourID">{peer.id ? "Your ID: " +  yourID : "Connecting..."}</h2>
+          <h2 className="YourID">{peer.id ? "Your ID: " + yourID : "Connecting..."}</h2>
           <Clock/>
         </section>
         <video className="vid" ref={localVideoRef} autoPlay/>
@@ -274,7 +270,7 @@ const ChatPage = ({
             {peerIDList.map((peerID) => {
               let colourNum = `${crc32.str(peerID).toString(16)}`;
               colourNum = colourNum.padEnd(7, "0");
-              let colour = `#${colourNum.slice(1, 7)}`;
+              const colour = `#${colourNum.slice(1, 7)}`;
               return (
                 <p
                   className="user"
